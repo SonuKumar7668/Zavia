@@ -2,14 +2,15 @@
 
 import React from 'react';
 import './Hero.css'; // optional for styling
-import logo from '../assets/logo.png'; // Your logo path
+
 
 const Hero = () => {
   return (
     <section className="hero">
       <nav className="navbar">
         <div className="logo">
-          <img src={logo} alt="Mentor Connect" />
+          <img src="./logo.png" alt="Mentor Connect" />
+          <h1>ZAVIA</h1>
         </div>
         <ul className="nav-links">
           <li>About</li>

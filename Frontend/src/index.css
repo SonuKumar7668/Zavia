@@ -1,13 +1,18 @@
+/* Remove black borders/margins */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  background-color: white; /* or your preferred background */
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Make all headings black */
+h1, h2, h3, h4, h5, h6 {
+  color: #000000;
+}
+
+/* Container styling to match reference */
+.main-container {
+  /* max-width: 1200px; or your preferred max width */
+  margin: 0;
+  padding: 20px;
 }
