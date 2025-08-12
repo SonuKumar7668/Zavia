@@ -3,11 +3,13 @@ const app = express();
 const mongoose = require("mongoose");
 const port = 8080;
 const bodyParser = require("body-parser");
+const cors = require("cors");
 require('dotenv').config();
 const url = process.env.DB_URL;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
+app.use(cors());
 
 app.get("/",(req,res)=>{
     res.send("Server started");
