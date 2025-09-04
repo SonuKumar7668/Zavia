@@ -1,0 +1,48 @@
+const express = require('express');
+const router = express.Router();
+const sessionModel = require('../models/sessionModel');
+const mentorModel = require('../models/mentorModel');
+const verifyToken = require('../utils/verifyToken');
+const {nanoid} = require('nanoid');
+
+router.get("/",async (req,res)=>{
+    const sessions = await sessionModel.find();
+    return res.status(200).json({success:true,sessions});
+})
+
+router.post("/create",verifyToken,async (req,res)=>{
+    const {mentorId} = req.body;
+    const menteeId = req.user.id;
+    // const mentor = await mentorModel.findById(mentorId);
+    // if(menteeId === mentor.userId.toString()){
+    //     return res.status(400).json({success:false,message:"You cannot create session with yourself"});
+    // }
+    let newSession = new sessionModel({
+        mentorId,
+        menteeId,
+        roomId:nanoid(),
+        status:"upcoming",
+    });
+    await newSession.save();
+    return res.status(200).json({success:true,session:newSession});
+});
+
+router.post("/cancel",verifyToken,async (req,res)=>{
+    const {sessionId} = req.body;
+    const menteeId = req.user.id;
+    const session = await sessionModel.findById(sessionId);
+    if(!session){
+        return res.status(404).json({success:false,message:"Session not found"});
+    }
+    if(session.menteeId.toString() !== menteeId){
+        return res.status(403).json({success:false,message:"You are not authorized to cancle this session"});
+    }
+    if(session.status !== "upcoming"){
+        return res.status(400).json({success:false,message:"You can only cancle upcoming sessions"});
+    }
+    session.status = "cancled";
+    await session.save();
+    return res.status(200).json({success:true,message:"Session canclled successfully"});
+});
+
+module.exports = router;

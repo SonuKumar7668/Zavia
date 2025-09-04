@@ -16,6 +16,11 @@ const sessionSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"Review"
     },
+    status:{
+        type:String,
+        enum:["upcoming","completed","cancled"],
+        default:"pending"
+    },
     time:Date,
 }, { timestamps: true });
 

@@ -10,6 +10,7 @@ const url = process.env.DB_URL;
 const userRoutes = require("./routes/user.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const adminRoutes = require("./routes/admin.routes");
+const sessionRoutes = require("./routes/session.routes");
 const e = require("express");
 
 app.use(bodyParser.json());
@@ -24,6 +25,7 @@ app.get("/",(req,res)=>{
 app.use("/user",userRoutes);
 app.use("/admin",adminRoutes);
 app.use("/mentor",mentorRoutes);
+app.use("/session",sessionRoutes);
 
 app.listen(port,async()=>{
     console.log(`app is listening at -> ${port}`);
