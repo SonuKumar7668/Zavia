@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const sessionModel = require('../models/sessionModel');
 const mentorModel = require('../models/mentorModel');
-const verifyToken = require('../utils/verifyToken');
+const verifyToken = require('../middlewares/verifyToken');
 const {nanoid} = require('nanoid');
 
 router.get("/",async (req,res)=>{
