@@ -1,5 +1,10 @@
 const express = require("express");
 const app = express();
+const {Server} = require("socket.io");
+const {createServer} = require("node:http");
+const server = createServer(app);
+const connectServer = require("./controller/socketManager");
+const io = connectServer(server);
 const mongoose = require("mongoose");
 const port = 8080;
 const bodyParser = require("body-parser");
@@ -11,7 +16,6 @@ const userRoutes = require("./routes/user.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const adminRoutes = require("./routes/admin.routes");
 const sessionRoutes = require("./routes/session.routes");
-const e = require("express");
 
 app.use(bodyParser.json());
 app.use(express.json());
@@ -27,7 +31,7 @@ app.use("/admin",adminRoutes);
 app.use("/mentor",mentorRoutes);
 app.use("/session",sessionRoutes);
 
-app.listen(port,async()=>{
+server.listen(port,async()=>{
     console.log(`app is listening at -> ${port}`);
     console.log("Connecting with Database");
     await mongoose.connect(url).then(()=>{

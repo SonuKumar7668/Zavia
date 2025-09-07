@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const mentorModel = require("../models/mentorModel");
-const verifyToken = require("../utils/verifyToken");
-//const asyncWrap = require("../utils/asyncWrap");
-const verifyAdmin = require("../utils/verifyAdmin");
+const verifyToken = require("../middlewares/verifyToken");
+//const asyncWrap = require("../middlewares/asyncWrap");
+const verifyAdmin = require("../middlewares/verifyAdmin");
 
 router.post("/mentor/:status",verifyToken,verifyAdmin,async (req,res)=>{
     let status = req.params.status;
