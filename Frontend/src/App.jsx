@@ -1,22 +1,27 @@
-import { useState } from 'react'
-import './App.css'
-import Hero from './components/Hero'
-import WhyTrust from './components/WhyTrust'
-import Features from './components/Features'
-import Education from './components/Education'
-import CTASection from './components/CTASection'
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import WhyChooseUs from "./components/WhyChooseUs";
+import FeaturedMentors from "./components/FeaturesMentors";
+import SuccessStories from "./components/SuccessStories";
+import Footer from "./components/Footer";
+import ProfileCard from "./components/ProfileCard";
+import MentorSlider from "./components/MentorSlider";
+import MentorProfile from "./components/MentorProfile";
+
 
 function App() {
-
   return (
-    <>
-       <Hero/>
-     <WhyTrust />
-      <Features />
-      <Education />
-      <CTASection />
-    </>
-  )
+    <div>
+      <Header />
+      <Hero />
+      <WhyChooseUs />
+      <FeaturedMentors />
+      <SuccessStories />
+      <Footer />
+      <ProfileCard/>
+      <MentorSlider/>
+      <MentorProfile/>
+    </div>
+  );
 }
-
-export default App
+export default App;
