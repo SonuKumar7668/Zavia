@@ -6,8 +6,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET;
-const varifyToken = require("../utils/verifyToken");
-const asyncWrap = require("../utils/asyncWrap");
+const varifyToken = require("../middlewares/verifyToken");
+const asyncWrap = require("../middlewares/asyncWrap");
 const salt = 10;
 
 // Register User
