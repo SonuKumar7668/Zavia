@@ -1,27 +1,29 @@
 import Header from "./components/Header";
-import Hero from "./components/Hero";
-import WhyChooseUs from "./components/WhyChooseUs";
-import FeaturedMentors from "./components/FeaturesMentors";
-import SuccessStories from "./components/SuccessStories";
 import Footer from "./components/Footer";
-import ProfileCard from "./components/ProfileCard";
-import MentorSlider from "./components/MentorSlider";
-import MentorProfile from "./components/MentorProfile";
+import MentorProfile from "./profile/ProfilePage";
+import {Routes,Route, BrowserRouter} from "react-router";
+import LandingPage from "./landing/LandingPage";
+import MentorForm from "./Forms/MentorForm";
+import Explore from "./explore/Explore";
+import Register from "./register/Register";
+import Login from "./register/Login";
 
 
 function App() {
   return (
-    <div>
+    <BrowserRouter>
       <Header />
-      <Hero />
-      <WhyChooseUs />
-      <FeaturedMentors />
-      <SuccessStories />
-      <Footer />
-      <ProfileCard/>
-      <MentorSlider/>
-      <MentorProfile/>
-    </div>
+      <Routes>
+        <Route path="/" element={<LandingPage/>}/>
+        <Route path="/mentor/profile/:id" element={<MentorProfile/>}/>
+        <Route path="/form" element={<MentorForm/>}/>
+        <Route path="/explore" element={<Explore/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/register" element={<Register/>}/>
+        <Route path="*" element={<h1>404 Not Found</h1>}/>
+      </Routes>
+      <Footer/>
+    </BrowserRouter>
   );
 }
 export default App;

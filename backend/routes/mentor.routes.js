@@ -8,4 +8,12 @@ router.get("/",async (req,res)=>{
     return res.status(200).json(mentors);
 });
 
+router.get("/:id",async(req,res)=>{
+    let mentor = await mentorModel.findById(req.params.id);
+    if(!mentor){
+        return res.status(404).json({message:"Mentor not found"});
+    }
+    return res.status(200).json(mentor);
+})
+
 module.exports = router;

@@ -24,6 +24,7 @@ router.post("/register", async (req, res) => {
     user = new userModel({name, email, password:hashedPassword});
     await user.save();
     res.status(201).json({msg:"User registered successfully"});
+    // res.redirect('/login');
 })
 
 // Login User
@@ -40,8 +41,8 @@ router.post("/login",async (req,res)=>{
     if(!isMatch){
         return res.status(400).json({msg:"Invalid credentials"});
     }
-    const token = jwt.sign({id:user._id,role:user.role},JWT_SECRET,{expiresIn:"1d"});
-    res.status(200).json({token});
+    const token = jwt.sign({id:user._id,role:user.role,name:user.name},JWT_SECRET,{expiresIn:"1d"});
+    res.status(200).json({success:"true",token});
 })
 
 // Mentor Request
