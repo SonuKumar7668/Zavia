@@ -1,15 +1,56 @@
-import React,{useState, useEffect} from "react";
-import { useParams } from "react-router";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 
 export default function MentorProfile() {
-
+  const navigate = useNavigate();
   const [mentor, setMentor] = useState(null);
-  const {id} = useParams();
+  const [booked, setBooked] = useState(false);
+  const { id } = useParams();
+
+  useEffect(() => {
+    const checkBooked = async () => {
+      if(!localStorage.getItem("token")) return;
+      const backendUrl = import.meta.env.VITE_BACKEND_API;
+      try {
+        const response = await axios.get(`${backendUrl}/session/check/${id}`,
+          {
+            headers: {
+              Authorization: `${localStorage.getItem("token")}`
+            }
+          });
+        setBooked(response.data.booked);
+      } catch (err) {
+        console.log("Error checking booked status",err);
+      }
+    }
+    checkBooked();
+  }, []);
+
+  const bookSession = async () => {
+    if (booked) return;
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+      return;
+    }
+    const backendUrl = import.meta.env.VITE_BACKEND_API;
+    try {
+      const response = await axios.post(`${backendUrl}/session/create`, { mentorId: id },
+        {
+          headers: {
+            Authorization: `${localStorage.getItem("token")}`
+          }
+        });
+      console.log("Session booked successfully:", response.data);
+      setBooked(true);
+    } catch (error) {
+      console.error("Error booking session:", error);
+    }
+  }
 
   useEffect(() => {
     const fetchMentor = async () => {
-      const backendUrl = import.meta.env.VITE_BACKEND_API ;
+      const backendUrl = import.meta.env.VITE_BACKEND_API;
       try {
         const response = await axios.get(`${backendUrl}/mentor/${id}`);
         setMentor(response.data);
@@ -18,7 +59,7 @@ export default function MentorProfile() {
       }
     };
     fetchMentor();
-  },[id])
+  }, [id])
 
   if (!mentor) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -80,8 +121,8 @@ export default function MentorProfile() {
 
         {/* Buttons */}
         <div className="mt-8 flex flex-wrap gap-4">
-          <button className="flex-1 bg-primary hover:bg-secondary text-white py-2 rounded-lg font-medium">
-            Book Meeting
+          <button onClick={bookSession} className="cursor-pointer flex-1 bg-primary hover:bg-secondary text-white py-2 rounded-lg font-medium" >
+            {booked ? <span>Meeting booked</span> : <span>Book Meeting</span>}
           </button>
         </div>
       </div>

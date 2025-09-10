@@ -10,6 +10,17 @@ router.get("/",async (req,res)=>{
     return res.status(200).json({success:true,sessions});
 })
 
+router.get("/check/:id",verifyToken,async (req,res)=>{
+    const mentorId = req.params.id;
+    const menteeId = req.user.id;
+    const session = await sessionModel.find({mentorId,menteeId}).populate('mentorId');
+    let booked = false;
+    if(session.length > 0){
+        booked = true;
+    }
+    return res.status(200).json({success:true,booked,session});
+});
+
 router.post("/create",verifyToken,async (req,res)=>{
     const {mentorId} = req.body;
     const menteeId = req.user.id;
