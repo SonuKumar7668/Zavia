@@ -6,8 +6,9 @@ export default function Explore() {
 
   useEffect(() => {
     const fetchMentors = async () => {
+      const backend=import.meta.env.VITE_BACKEND_URL;
       try {
-        const response = await axios.get('http://localhost:8080/mentor'); // Replace with your API endpoint
+        const response = await axios.get(`${backend}/mentor`); // Replace with your API endpoint
         setMentors(response.data);
       } catch (error) {
         console.error('Error fetching mentors:', error);
