@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 
 export default function MentorCard({mentor}) {
   // const [mentors, setMentor] = useState(mentor);
-    const {_id,profileImg,name, highestEducation, meetingCharge}=mentor;
+    const {_id,name, highestEducation, meetingCharge}=mentor;
     // console.log(mentors);
   return (
     <Link to={`/mentor/profile/${_id}`}>

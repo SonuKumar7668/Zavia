@@ -40,12 +40,12 @@ export default Header;
 const LoggedIn = ()=>{
   return (
     <>
-<a href="/register" className="hidden md:block bg-blue-600 text-white px-5 py-2 rounded-full shadow hover:bg-blue-700">
+<Link to="/register" className="hidden md:block bg-blue-600 text-white px-5 py-2 rounded-full shadow hover:bg-blue-700">
           Register
-        </a>
-        <a href="/login" className="hidden md:block border-2 border-blue-600  bg-white px-5 py-2 rounded-full shadow ">
+        </Link>
+        <Link to="/login" className="hidden md:block border-2 border-blue-600  bg-white px-5 py-2 rounded-full shadow ">
           Login
-        </a>
+        </Link>
     </>
   )
 }
