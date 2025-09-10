@@ -7,7 +7,8 @@ const FeaturedMentors = () => {
   useEffect(()=>{
     const fetchMentors = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/mentor'); // Replace with your API endpoint
+        const backend=import.meta.env.VITE_BACKEND_API;
+        const response = await axios.get(`${backend}/mentor`); // Replace with your API endpoint
         const data = response.data.slice(0, 3); // Get only 3 mentors
         setMentors(data);
       } catch (error) {
