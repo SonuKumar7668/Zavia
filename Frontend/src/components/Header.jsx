@@ -1,6 +1,16 @@
 import {Link} from "react-router";
+import { useState, useEffect } from "react";
 function Header() {
-  const token = localStorage.getItem("token");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  },[]);
+  // const token = localStorage.getItem("token");
   return (
     <header className="top-0 left-0 w-full bg-white shadow z-50">
       <div className="container mx-auto flex justify-between items-center px-6 py-4">
@@ -19,7 +29,7 @@ function Header() {
           {/* <Link to="#stories" className="hover:text-blue-600">Stories</Link> */}
 
         {/* CTA */}
-        {token ? <Logout/>: <LoggedIn/>}
+        {isLoggedIn ? <Logout/>: <LoggedIn/>}
         </nav>
       </div>
     </header>

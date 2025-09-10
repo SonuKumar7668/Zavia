@@ -4,7 +4,7 @@ const mentorModel = require("../models/mentorModel");
 //const verifyToken = require("../utils/verifyToken");
 
 router.get("/",async (req,res)=>{
-    let mentors = await mentorModel.find({status:"approved"});
+    let mentors = await mentorModel.find();
     return res.status(200).json(mentors);
 });
 

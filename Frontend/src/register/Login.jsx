@@ -28,27 +28,26 @@ const Login = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Basic validation for the form fields
-//   const validateForm = () => {
-//     const newErrors = {};
-//     if (!formData.name) newErrors.name = 'Name is required.';
-//     if (!formData.email) {
-//       newErrors.email = 'Email is required.';
-//     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-//       newErrors.email = 'Email address is invalid.';
-//     }
-//     if (!formData.password) {
-//       newErrors.password = 'Password is required.';
-//     } else if (formData.password.length < 6) {
-//       newErrors.password = 'Password must be at least 6 characters.';
-//     }
-//     if (formData.password !== formData.confirmPassword) {
-//       newErrors.confirmPassword = 'Passwords do not match.';
-//     }
+  //Basic validation for the form fields
+  const validateForm = () => {
+    const newErrors = {};
+    // if (!formData.name) newErrors.name = 'Name is required.';
+    if (!formData.email) {
+      newErrors.email = 'Email is required.';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email address is invalid.';
+    }
+    if (!formData.password) {
+      newErrors.password = 'Password is required.';
+    } 
+    // if (formData.password !== formData.confirmPassword) {
+    //   newErrors.confirmPassword = 'Passwords do not match.';
+    // }
 
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
+    setErrors(newErrors);
+    console.log("new errors",newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const submitForm = async ()=>{
     console.log("submiting form");
     const response = await fetch(`${api}/user/login`,{
@@ -60,13 +59,17 @@ const Login = () => {
     });
     const data = await response.json();
     if(data.success){
+      setSubmissionStatus('success');
       const decoded = jwtDecode(data.token);
       console.log("decoded token",decoded);
         localStorage.setItem("token",data.token);
         localStorage.setItem("name",decoded.name);
         localStorage.setItem("role",decoded.role);
+        localStorage.setItem("userId",decoded.id);
         navigate("/");
+        window.location.reload();
     }else{
+      setSubmissionStatus('error');
         console.log("Invalid Credentials");
     }
   }
@@ -77,19 +80,18 @@ const Login = () => {
     console.log("handling submit",formData);
     setSubmissionStatus(null); // Reset submission status
 
-    submitForm();
-    // if (validateForm()) {
-    //   console.log('Form data submitted:', formData);
-    //   setSubmissionStatus('success');
-    //   // Clear the form after successful submission
-    //   setFormData({
-    //     email: '',
-    //     password: '',
-    //   });
-    //   setErrors({});
-    // } else {
-    //   setSubmissionStatus('error');
-    // }
+    if (validateForm()) {
+      submitForm();
+      console.log('Form data submitted:', formData);
+      // Clear the form after successful submission
+      setFormData({
+        email: '',
+        password: '',
+      });
+      setErrors({});
+    } else {
+      setSubmissionStatus('error');
+    }
   };
 
   return (

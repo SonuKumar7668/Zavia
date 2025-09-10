@@ -1,8 +1,11 @@
 import { useState } from "react";
+import axios from "axios";
 import { X, Plus, Upload, User, MapPin, Briefcase, Globe, Heart } from "lucide-react";
+import { useNavigate } from "react-router";
 //import { toast } from "@/hooks/use-toast"; // keep if you are using toast, otherwise remove
 
 export default function MentorForm() {
+  let navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     bio: "",
@@ -43,9 +46,36 @@ export default function MentorForm() {
       formData[field].filter((_, i) => i !== index)
     );
   };
+  const submitForm = async () => {
+    const api = import.meta.env.VITE_BACKEND_API;
+    try {
+      const response = await axios.post(`${api}/user/mentor/create`, formData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Server Response:", response.data);
+      localStorage.setItem("role","mentor");
+      navigate("/");
+
+      // toast({
+      //   title: "Profile Created Successfully!",
+      //   description: "Your professional profile has been saved.",
+      // });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      // toast({
+      //   title: "Error",
+      //   description: "There was an error creating your profile. Please try again.",
+      //   variant: "destructive",
+      // });
+    }
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    submitForm();
     // toast({
     //   title: "Profile Created Successfully!",
     //   description: "Your professional profile has been saved.",
@@ -206,13 +236,21 @@ export default function MentorForm() {
 
             <div className="mt-4">
               <label htmlFor="workExperience" className="block font-medium">Work Experience</label>
-              <textarea
+              {/* <textarea
                 id="workExperience"
                 value={formData.workExperience}
                 onChange={(e) => handleInputChange("workExperience", e.target.value)}
                 placeholder="Describe your work experience..."
                 className="w-full border rounded p-2 min-h-[100px]"
-              />
+              /> */}
+              <input
+                  id="meetingCharge"
+                  type="number"
+                  value={formData.workExperience}
+                  onChange={(e) => handleInputChange("workExperience",e.target.value)}
+                  placeholder="3 (in years)"
+                  className="w-full border rounded p-2"
+                />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
@@ -222,7 +260,7 @@ export default function MentorForm() {
                   id="meetingCharge"
                   type="number"
                   value={formData.meetingCharge}
-                  onChange={(e) => handleInputChange("meetingCharge", Number(e.target.value))}
+                  onChange={(e) => handleInputChange("meetingCharge", e.target.value)}
                   placeholder="150"
                   min="0"
                   className="w-full border rounded p-2"
@@ -438,7 +476,7 @@ export default function MentorForm() {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="bg-gradient-primary hover:shadow-glow transition-spring text-lg px-12 py-3 h-auto font-semibold rounded-lg"
+              className="cursor-pointer bg-amber-500 bg-gradient-primary hover:shadow-glow transition-spring text-lg px-12 py-3 h-auto font-semibold rounded-lg"
             >
               Create Profile
             </button>

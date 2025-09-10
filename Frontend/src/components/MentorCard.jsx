@@ -3,15 +3,16 @@ import { DollarSign, GraduationCap,IndianRupee } from 'lucide-react';
 import { Link } from 'react-router';
 
 export default function MentorCard({mentor}) {
-  console.log(mentor);
-    const {_id,profileImg="https://i.ibb.co/RpYtQM5Y/logo.png",name, highestEducation, meetingCharge}=mentor;
+  // const [mentors, setMentor] = useState(mentor);
+    const {_id,profileImg,name, highestEducation, meetingCharge}=mentor;
+    // console.log(mentors);
   return (
     <Link to={`/mentor/profile/${_id}`}>
 <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden transition-spring hover:shadow-lg hover:-translate-y-1 cursor-pointer">
       {/* Image Section */}
       <div className="aspect-square overflow-hidden">
         <img
-          src={profileImg}
+          src="https://i.ibb.co/RpYtQM5Y/logo.png"
           alt={`${name} profile`}
           className="w-full h-full object-cover transition-transform hover:scale-105"
         />

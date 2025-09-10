@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {EyeClosed, Eye} from "lucide-react";
 import {Link} from "react-router";
+import axios from 'axios';
 
 // The main App component containing the registration form.
 const Register = () => {
@@ -27,62 +28,56 @@ const Register = () => {
   };
 
   // Basic validation for the form fields
-  // const validateForm = () => {
-  //   const newErrors = {};
-  //   if (!formData.name) newErrors.name = 'Name is required.';
-  //   if (!formData.email) {
-  //     newErrors.email = 'Email is required.';
-  //   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-  //     newErrors.email = 'Email address is invalid.';
-  //   }
-  //   if (!formData.password) {
-  //     newErrors.password = 'Password is required.';
-  //   } else if (formData.password.length < 6) {
-  //     newErrors.password = 'Password must be at least 6 characters.';
-  //   }
-  //   if (formData.password !== formData.confirmPassword) {
-  //     newErrors.confirmPassword = 'Passwords do not match.';
-  //   }
-
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
-
-  const api = import.meta.env.VITE_BACKEND_API;
-    const submitForm = async ()=>{
-        const response = await fetch(`${api}/register`,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify(formData)
-        });
-        const data = await response.json();
-        if(data.msg){
-            console.log(data.msg);
-        }
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name) newErrors.name = 'Name is required.';
+    if (!formData.email) {
+      newErrors.email = 'Email is required.';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email address is invalid.';
     }
+    if (!formData.password) {
+      newErrors.password = 'Password is required.';
+    }
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const submitForm = async ()=>{
+    const api = import.meta.env.VITE_BACKEND_API;
+    try {
+        const response = await axios.post(`${api}/user/register`,formData);
+        console.log(response.data);
+        console.log(response.status);
+    } catch (error) {
+        console.error("There was an error!", error);
+    }
+  }
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmissionStatus(null); // Reset submission status
 
-    submitForm();
-    // if (validateForm()) {
-    //   console.log('Form data submitted:', formData);
-    //   setSubmissionStatus('success');
-    //   // Clear the form after successful submission
-    //   setFormData({
-    //     name: '',
-    //     email: '',
-    //     password: '',
-    //     confirmPassword: '',
-    //   });
-    //   setErrors({});
-    // } else {
-    //   setSubmissionStatus('error');
-    // }
+    if (validateForm()) {
+      submitForm();
+      console.log('Form data submitted:', formData);
+      setSubmissionStatus('success');
+      // Clear the form after successful submission
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+      setErrors({});
+    } else {
+      setSubmissionStatus('error');
+    }
   };
 
   return (
@@ -215,5 +210,4 @@ const Register = () => {
     </div>
   );
 };
-
 export default Register;
