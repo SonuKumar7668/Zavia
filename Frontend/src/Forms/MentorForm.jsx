@@ -148,7 +148,8 @@ export default function MentorForm() {
                   id="profileImg"
                   value={formData.profileImg}
                   onChange={(e) => handleInputChange("profileImg", e.target.value)}
-                  placeholder="https://example.com/your-photo.jpg"
+                  placeholder="Upload your profile image"
+                  disabled
                   className="flex-1 border rounded p-2 transition-smooth"
                 />
                 <button
@@ -235,7 +236,7 @@ export default function MentorForm() {
             </div>
 
             <div className="mt-4">
-              <label htmlFor="workExperience" className="block font-medium">Work Experience</label>
+              <label htmlFor="workExperience" className="block font-medium">Work Experience in Years</label>
               {/* <textarea
                 id="workExperience"
                 value={formData.workExperience}
@@ -255,7 +256,7 @@ export default function MentorForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
               <div>
-                <label htmlFor="meetingCharge" className="block font-medium">Meeting Charge</label>
+                <label htmlFor="meetingCharge" className="block font-medium">Meeting Charge in hours</label>
                 <input
                   id="meetingCharge"
                   type="number"
@@ -476,7 +477,7 @@ export default function MentorForm() {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="cursor-pointer bg-amber-500 bg-gradient-primary hover:shadow-glow transition-spring text-lg px-12 py-3 h-auto font-semibold rounded-lg"
+              className="cursor-pointer bg-secondary bg-gradient-primary hover:shadow-glow transition-spring text-lg px-12 py-3 h-auto font-semibold rounded-lg"
             >
               Create Profile
             </button>

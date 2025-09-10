@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import {EyeClosed, Eye} from "lucide-react";
-import {Link} from "react-router";
+import {Link, useNavigate} from "react-router";
 import axios from 'axios';
 
 // The main App component containing the registration form.
 const Register = () => {
+  const navigate = useNavigate();
   // State to hold form data
   const [formData, setFormData] = useState({
     name: '',
@@ -51,6 +52,7 @@ const Register = () => {
     const api = import.meta.env.VITE_BACKEND_API;
     try {
         const response = await axios.post(`${api}/user/register`,formData);
+        navigate('/login');
         console.log(response.data);
         console.log(response.status);
     } catch (error) {
@@ -194,7 +196,7 @@ const Register = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-colors duration-300"
+            className="w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-xl transition-colors duration-300"
           >
             Register
           </button>
@@ -202,7 +204,7 @@ const Register = () => {
 
         <p className="mt-6 text-center text-gray-500">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+          <Link to="/login" className="text-primary hover:text-secondary font-semibold">
             Login here
           </Link>
         </p>

@@ -25,19 +25,19 @@ export default function MentorProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4 pb-12">
+    <div className=" bg-white flex justify-center px-4 pb-12">
       <div className="bg-white max-w-3xl w-full rounded-2xl shadow-xl p-8 border border-gray-200">
         {/* Profile Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <img
             src={"https://i.ibb.co/RpYtQM5Y/logo.png"}
             alt={mentor.name}
-            className="w-32 h-32 rounded-full border-4 border-purple-500 object-cover"
+            className="w-32 h-32 rounded-full border-4 border-primary object-cover"
           />
           <div className="text-center sm:text-left">
             <h1 className="text-3xl font-bold text-gray-800">{mentor.name}</h1>
             <p className="text-gray-500">{mentor.country}</p>
-            <p className="text-purple-600 font-medium">{mentor.currentJob}</p>
+            <p className="text-secondary font-medium">{mentor.currentJob}</p>
           </div>
         </div>
 
@@ -70,7 +70,7 @@ export default function MentorProfile() {
             {mentor.skills.map((skill, i) => (
               <span
                 key={i}
-                className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full"
+                className="px-3 py-1 bg-purple-100 text-primary text-sm rounded-full"
               >
                 {skill}
               </span>
@@ -80,7 +80,7 @@ export default function MentorProfile() {
 
         {/* Buttons */}
         <div className="mt-8 flex flex-wrap gap-4">
-          <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium">
+          <button className="flex-1 bg-primary hover:bg-secondary text-white py-2 rounded-lg font-medium">
             Book Meeting
           </button>
         </div>

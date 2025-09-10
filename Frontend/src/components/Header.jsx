@@ -17,7 +17,7 @@ function Header() {
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <img src="https://i.ibb.co/RpYtQM5Y/logo.png" alt="Zavia" className="w-10 h-10"/>
-          <h1 className="text-xl font-bold text-blue-600"><Link to="/">Zavia</Link></h1>
+          <h1 className="text-xl font-bold text-primary"><Link to="/">Zavia</Link></h1>
         </div>
 
         {/* Navbar */}
@@ -40,10 +40,10 @@ export default Header;
 const LoggedIn = ()=>{
   return (
     <>
-<Link to="/register" className="hidden md:block bg-blue-600 text-white px-5 py-2 rounded-full shadow hover:bg-blue-700">
+<Link to="/register" className="hidden md:block bg-primary text-white px-5 py-2 rounded-full shadow hover:bg-secondary">
           Register
         </Link>
-        <Link to="/login" className="hidden md:block border-2 border-blue-600  bg-white px-5 py-2 rounded-full shadow ">
+        <Link to="/login" className="hidden md:block border-2 border-primary  bg-white px-5 py-2 rounded-full shadow ">
           Login
         </Link>
     </>
@@ -58,7 +58,7 @@ const Logout = ()=>{
     window.location.reload();
   }
   return (
-    <button onClick={logout} className="cursor-pointer hidden md:block border-2 border-blue-600  bg-white px-5 py-2 rounded-full shadow ">
+    <button onClick={logout} className="cursor-pointer hidden md:block border-2 border-primary hover:border-secondary  bg-white px-5 py-2 rounded-full shadow ">
           Logout
         </button>
   )
