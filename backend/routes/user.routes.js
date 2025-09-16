@@ -42,14 +42,13 @@ router.post("/login",async (req,res)=>{
         return res.status(400).json({msg:"Invalid credentials"});
     }
     console.log("matched");
-    const token = jwt.sign({id:user._id,role:user.role,name:user.name},JWT_SECRET,{expiresIn:"1d"});
+    const token = jwt.sign({id:user._id,role:user.role,name:user.name},JWT_SECRET,{expiresIn:"7d"});
     res.status(200).json({success:"true",token});
 })
 
 // Mentor Request
 router.post("/mentor/create",varifyToken,async (req,res)=>{
     let data = req.body;
-    console.log("data: ",data)
     let newMentor = new mentorModel(data);
     let userId = req.user.id;
     newMentor.userId = userId;
@@ -57,7 +56,6 @@ router.post("/mentor/create",varifyToken,async (req,res)=>{
     let user = await userModel.findById(userId);
     user.role = "mentor";
     await user.save();
-    console.log("newMentor: ",newMentor);
     await newMentor.save();
     return res.status(200).json({msg:"Mentor request received"});
 })

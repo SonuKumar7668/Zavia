@@ -9,10 +9,10 @@ const verifyToken = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
-        console.log(req.user);
         next();
     } catch (e) {
-        res.status(400).json({ msg: 'Token is not valid ch' });
+        console.error(e," JWT Error");
+        res.status(400).json({token: false, msg: 'Token is not valid ch' });
     }
 }
 module.exports = verifyToken;

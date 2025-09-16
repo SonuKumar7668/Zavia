@@ -1,20 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import {Link} from "react-router";
+// import {Link} from "react-router";
+import { useSocket } from '../context/SocketProvider';
+// import {io} from "socket.io-client";
+import { useNavigate } from 'react-router';
 
 const SessionCard = ({session}) => {
   const [status, setStatus] = useState('pending');
   const mentor = session.mentorId;
   useEffect(()=>{
     setStatus(session.status);
-    console.log("session: ",session);
   },[])
+  // const socket = useSocket();
+  
+  const navigate = useNavigate();
 
   const statusColor = status === 'completed' ? 'bg-green-500' :
                       status === 'cancelled' ? 'bg-red-500' :
                       'bg-yellow-500';
 
-  const joinSession = () => {
-    console.log("yet to handle");
+  const socket = useSocket();
+  const joinSession = (e) => {
+    e.preventDefault();
+    // const backendUrl = import.meta.env.VITE_BACKEND_API || "http://localhost:8080";
+    // const socket = io(backendUrl);
+    console.log(socket);
+    socket.emit("join:room",session.roomId);
+    console.log("Joined: ",session.roomId);
+    navigate(`/videocall/${session.roomId}`);
   }
 
   const cancleSession = () => {
@@ -39,14 +51,14 @@ const SessionCard = ({session}) => {
         
         {/* Right side: Buttons */}
         <div className="flex items-center space-x-2 flex-shrink-0 ml-4">
-          <Link to="/videocall">
+
           <button
           onClick={joinSession}
           className="cursor-pointer px-3 py-1 text-sm font-medium text-white bg-primary rounded-full hover:bg-secondary transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Join
           </button>
-            </Link>
+
           <button
           onClick={cancleSession}
             className="cursor-pointer px-3 py-1 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"

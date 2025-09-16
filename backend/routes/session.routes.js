@@ -18,6 +18,7 @@ router.get("/check/:id",verifyToken,async (req,res)=>{
     if(session.length > 0){
         booked = true;
     }
+
     return res.status(200).json({success:true,booked,session});
 });
 

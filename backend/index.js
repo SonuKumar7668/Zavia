@@ -16,6 +16,7 @@ const userRoutes = require("./routes/user.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const adminRoutes = require("./routes/admin.routes");
 const sessionRoutes = require("./routes/session.routes");
+const verifyToken = require("./middlewares/verifyToken");
 
 app.use(bodyParser.json());
 app.use(express.json());
@@ -25,6 +26,10 @@ app.use(cors());
 app.get("/",(req,res)=>{
     res.send("Server started");
 })
+
+app.get("/verifyToken",verifyToken,(req,res)=>{
+    return res.status(200).json({token:true,user:req.user});
+});
 
 app.use("/user",userRoutes);
 app.use("/admin",adminRoutes);

@@ -13,7 +13,7 @@ const connectServer = (server)=>{
 
         socket.on("join:room",(room)=>{
             socket.join(room);
-            console.log(`User with ID: ${socket.id} joined room: ${data}`);
+            console.log(`User with ID: ${socket.id} joined room`);
         });
 
         socket.on("send:message",(data,room)=>{

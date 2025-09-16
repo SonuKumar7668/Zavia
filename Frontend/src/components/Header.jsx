@@ -1,14 +1,28 @@
 import {Link} from "react-router";
 import { useState, useEffect } from "react";
+import axios from "axios";
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
+    async function verifyToken() {
     const token = localStorage.getItem("token");
-    if (token) {
+    const backendURL = import.meta.env.VITE_BACKEND_API || "http://localhost:8080";
+    const response =await axios.get(`${backendURL}/verifyToken`, {
+      headers: {
+        'Authorization': token
+      }
+    })
+    console.log(response.data.token);
+    if (response.data.token) {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
+      localStorage.removeItem("token");
+      localStorage.removeItem("name");
+      localStorage.removeItem("role");
     }
+  }
+    verifyToken();
   },[]);
   // const token = localStorage.getItem("token");
   return (
