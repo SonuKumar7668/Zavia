@@ -4,6 +4,7 @@ const mentorModel = require("../models/mentorModel");
 //const verifyToken = require("../utils/verifyToken");
 
 router.get("/",async (req,res)=>{
+    console.log("Fetching all mentors");
     let mentors = await mentorModel.find();
     return res.status(200).json(mentors);
 });

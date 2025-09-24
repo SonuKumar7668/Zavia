@@ -35,6 +35,9 @@ app.use("/user",userRoutes);
 app.use("/admin",adminRoutes);
 app.use("/mentor",mentorRoutes);
 app.use("/session",sessionRoutes);
+// app.all("*", (req, res) => {
+//     res.status(404).json({ message: "Route not found" });
+// });
 
 server.listen(port,async()=>{
     console.log(`app is listening at -> ${port}`);
