@@ -9,7 +9,7 @@ const SessionCard = ({session}) => {
   const mentor = session.mentorId;
   useEffect(()=>{
     setStatus(session.status);
-  },[])
+  },[session])
   // const socket = useSocket();
   
   const navigate = useNavigate();

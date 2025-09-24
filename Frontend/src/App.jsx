@@ -11,10 +11,9 @@ import Login from "./register/Login";
 import VideoCall from "./VideoCall/VideoCall";
 import { SocketProvider } from "./context/SocketProvider";
 
-
 function App() {
   const location = useLocation();
-  const hideLayoutRoutes = ["/videocall/:roomId"];
+  const hideLayoutRoutes = ["/videocall/"];
   const shouldHideLayout = hideLayoutRoutes.includes(location.pathname);
   return (
     <>
@@ -27,7 +26,7 @@ function App() {
         <Route path="/explore" element={<Explore/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
-        <Route path="/videocall/:roomId" element={<VideoCall/>}/>
+        <Route path="/videocall/" element={<VideoCall/>}/>
         <Route path="*" element={<h1>404 Not Found</h1>}/>
       </Routes>
       {!shouldHideLayout && <Footer/>}
