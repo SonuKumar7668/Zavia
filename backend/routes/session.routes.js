@@ -40,6 +40,7 @@ router.post("/create",verifyToken,async (req,res)=>{
 });
 
 router.post("/cancel",verifyToken,async (req,res)=>{
+    console.log("canceling session");
     const {sessionId} = req.body;
     const menteeId = req.user.id;
     const session = await sessionModel.findById(sessionId);

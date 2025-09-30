@@ -1,47 +1,86 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import VideoTile from "./VideoTile";
 import CallControls from "./CallControls";
 import ChatSidebar from "./ChatSidebar";
 import { useSocket } from "../context/SocketProvider";
 import { useLocation, useParams } from "react-router";
-import peer from "../service/peer";
+import Peer from "peerjs";
 
-/**
- * VideoCall - main layout component
- * - Integrate your WebRTC / video provider by replacing the mock participants and handlers.
- */
+
 export default function VideoCall() {
   const [participants, setParticipants] = useState([
     // Example participant objects; replace with live stream refs or objects from your RTC layer
-    { id: "me", name: "Yash Nema", initials: "Y", cameraOn: false, muted: true, stream: null },
+    { id: "me", name: "Yash Nema", initials: "Y", cameraOn: true, muted: true, stream: null },
     { id: "mentor", name: "Ava Mentor", initials: "A", cameraOn: true, muted: false, stream: null }
   ]);
+  
   const [chatOpen, setChatOpen] = useState(false);
   const [callActive, setCallActive] = useState(true);
   const [timerSeconds, setTimerSeconds] = useState(0);
-  const [videoRef, setVideoRef] = React.useState(null);
-  const [remoteVideoRef, setRemoteVideoRef] = React.useState(null);
   const [roomId,setRoomId] = useState();
+  const [videoStatus, setVideoStatus] = useState(true);
+  const [audioStatus, setAudioStatus] = useState(true);
+  const peerInstance = useRef(null);
+
+  const [localStream, setLocalStream] = useState(null);
+  const [remoteStream , setRemoteStream] = useState(null);
+
+  const [peerId, setPeerId] = useState(null);
+  const [remotePeerId, setRemotePeerId] = useState(null);
 
   const {id} = useParams();
   const socket = useSocket();
+
+  const userMedia = ()=>{
+    let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    getUserMedia({ video: videoStatus, audio: audioStatus }, (currentStream)=> {
+      setLocalStream(currentStream);
+    }, function (err) {
+      console.log('Failed to get local stream', err);
+    });
+  }
+
+  useEffect(()=>{
+    userMedia();
+    const peer = new Peer();
+    peer.on("open", (id) => {
+      console.log("My peer ID is: " + id);
+      setPeerId(id);
+    })
+
+    peer.on('call', (call)=>{
+      let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+      getUserMedia({ video: videoStatus, audio: audioStatus }, (stream)=> {
+        console.log(call);
+        call.answer(stream);
+        //const call = peer.call(remotePeerId, stream);
+      })
+    })
+    peerInstance.current = peer;
+    call(remotePeerId);
+  },[videoStatus,audioStatus]);
+
+  const call = (remotePeerId) => {
+    let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+      getUserMedia({ video: videoStatus, audio: audioStatus }, (stream)=>{
+        const call = peerInstance.current.call(remotePeerId,stream);
+
+        call.on('stream',(stream)=>{
+          setRemoteStream(stream);
+          console.log("remote stream: ",stream);
+        })
+      })
+  }
+
   useEffect(()=>{async function startCall(){
     console.log(id);
     setRoomId(id);
-    socket.emit("join:room",id);
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    setVideoRef(stream);
+    socket.emit("join:room",id,peerId);
+    
   }
   startCall();
-},[]);
+},[peerId]);
 
-  const sendStream = useCallback(() => {
-    console.log(peer);
-    if(!videoRef) return;
-    videoRef.getTracks().forEach((track) => {
-      peer.peer.addTrack(track, videoRef);
-    });
-  }, [videoRef]);
 
   useEffect(() => {
     let t;
@@ -59,11 +98,13 @@ export default function VideoCall() {
 
   // Example toggles — connect these to your signaling / WebRTC logic
   const toggleMute = (id) => {
-    setParticipants(prev => prev.map(p => p.id === id ? { ...p, muted: !p.muted } : p));
+    setAudioStatus(!audioStatus);
+    console.log("audio status: ",audioStatus);
   };
 
-  const toggleCamera = (id) => {
-    setParticipants(prev => prev.map(p => p.id === id ? { ...p, cameraOn: !p.cameraOn } : p));
+  const toggleCamera = () => {
+    setVideoStatus(!videoStatus);
+    console.log("video status: ",videoStatus); 
   };
 
   const leaveCall = () => {
@@ -82,19 +123,22 @@ export default function VideoCall() {
     console.log("room full");
   })
 
-  const handleReady = useCallback(()=>{
-    console.log("ready");
-    sendStream();
+  const handleReady = useCallback((peerId)=>{
+    console.log("ready: ",peerId);
+    setRemotePeerId(peerId);
+    if(audioStatus || videoStatus){
+      call(peerId);
+    }
   })
 
   useEffect(() => {
     socket.on("room:joined",handleRoomJoined);
     socket.on("room:full",handleRoomFull);
-    socket.on("ready",handleReady);
+    socket.on("room:ready",handleReady);
     return ()=>{
       socket.off("room:joined",handleRoomJoined);
       socket.off("room:full",handleRoomFull);
-      socket.off("ready",handleReady);
+      socket.off("room:ready",handleReady);
     }
   },[handleRoomJoined,socket,handleReady]);
 
@@ -126,8 +170,8 @@ export default function VideoCall() {
               //   ))}
               // </div>
               <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 gap-4">
-              <VideoTile participant={participants[0]} stream = {remoteVideoRef}/>
-              <VideoTile participant={participants[1]} stream = {videoRef} />
+              <VideoTile participant={participants[0]} stream = {remoteStream}/>
+              <VideoTile participant={participants[1]} stream = {localStream} />
               </div>
             )}
           </div>
@@ -136,8 +180,8 @@ export default function VideoCall() {
           <div className="absolute left-0 right-0 bottom-0 px-6 pb-6">
             <CallControls
               participants={participants}
-              onToggleMute={() => toggleMute("me")}
-              onToggleCamera={() => toggleCamera("me")}
+              onToggleMute={() => toggleMute()}
+              onToggleCamera={() => toggleCamera()}
               onEndCall={() => {
                 if (confirm("End call for everyone?")) leaveCall();
               }}
