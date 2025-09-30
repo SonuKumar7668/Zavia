@@ -8,7 +8,7 @@ export default function MentorCard({mentor}) {
     // console.log(mentors);
   return (
     <Link to={`/mentor/profile/${_id}`}>
-<div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden transition-spring hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+<div className="bg-card border-border rounded-xl shadow-sm overflow-hidden transition-spring hover:shadow-lg hover:-translate-y-1 cursor-pointer">
       {/* Image Section */}
       <div className="aspect-square overflow-hidden">
         <img

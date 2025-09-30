@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 // import {Link} from "react-router";
-import { useSocket } from '../context/SocketProvider';
 // import {io} from "socket.io-client";
 import { useNavigate } from 'react-router';
 
@@ -18,13 +17,12 @@ const SessionCard = ({session}) => {
                       status === 'cancelled' ? 'bg-red-500' :
                       'bg-yellow-500';
 
-  const socket = useSocket();
+  // const socket = useSocket();
   const joinSession = (e) => {
     e.preventDefault();
     // const backendUrl = import.meta.env.VITE_BACKEND_API || "http://localhost:8080";
     // const socket = io(backendUrl);
-    console.log(socket);
-    socket.emit("join:room",session.roomId);
+    //socket.emit("join:room",session.roomId);
     console.log("Joined: ",session.roomId);
     navigate(`/videocall/${session.roomId}`);
   }

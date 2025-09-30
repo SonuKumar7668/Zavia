@@ -1,9 +1,10 @@
 import React,{useEffect,useState} from "react";
 import axios from "axios";
 import MentorCard from "./MentorCard";
+import FeaturedMentor from "../skeleton/FeaturedMentor";
 
 const FeaturedMentors = () => {
-  const [mentors,setMentors] = useState([]);
+  const [mentors,setMentors] = useState(null);
   useEffect(()=>{
     const fetchMentors = async () => {
       try {
@@ -22,6 +23,12 @@ const FeaturedMentors = () => {
   //   { name: "Neha Patel", role: "Data Scientist @ Microsoft" },
   //   { name: "Ravi Kumar", role: "Product Manager @ Amazon" },
   // ];
+
+  if(!mentors){
+    return (
+    <FeaturedMentor/>
+    )
+  }
 
   return (
     <section id="mentors" className="py-16 px-6 bg-gray-50">

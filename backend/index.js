@@ -11,6 +11,7 @@ const cors = require("cors");
 require('dotenv').config();
 const url = process.env.DB_URL;
 const port = process.env.PORT ||8080;
+app.use(cors());
 
 const userRoutes = require("./routes/user.routes");
 const mentorRoutes = require("./routes/mentor.routes");
@@ -21,7 +22,6 @@ const verifyToken = require("./middlewares/verifyToken");
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(bodyParser.urlencoded());
-app.use(cors());
 
 app.get("/",(req,res)=>{
     res.send("Server started");

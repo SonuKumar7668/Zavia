@@ -13,12 +13,11 @@ import { SocketProvider } from "./context/SocketProvider";
 
 function App() {
   const location = useLocation();
-  const hideLayoutRoutes = ["/videocall"];
-  const shouldHideLayout = hideLayoutRoutes.includes(location.pathname);
+  const HideHeader = location.pathname.startsWith("/videocall");
   return (
     <>
-      <SocketProvider>
-      {!shouldHideLayout && <Header />}
+
+      {!HideHeader && <Header />}
       <Routes>
         <Route path="/" element={<LandingPage/>}/>
         <Route path="/mentor/profile/:id" element={<MentorProfile/>}/>
@@ -26,11 +25,14 @@ function App() {
         <Route path="/explore" element={<Explore/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
-        <Route path="/videocall" element={<VideoCall/>}/>
+        <Route path="/videocall/:id" element={
+        <SocketProvider>
+          <VideoCall/>
+        </SocketProvider>
+      }/>
         <Route path="*" element={<h1>404 Not Found</h1>}/>
       </Routes>
-      {!shouldHideLayout && <Footer/>}
-      </SocketProvider>
+      {!HideHeader && <Footer/>}
     </>
   );
 }

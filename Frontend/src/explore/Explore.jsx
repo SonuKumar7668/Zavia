@@ -1,8 +1,9 @@
 import React,{useEffect,useState} from 'react'
 import MentorCard from '../components/MentorCard';
+import MentorCardSkeleton from '../skeleton/MentorCardSkeleton';
 import axios from 'axios';
 export default function Explore() {
-  const [mentors,setMentors]=useState([]);
+  const [mentors,setMentors]=useState(null);
 
   useEffect(() => {
     const fetchMentors = async () => {
@@ -30,12 +31,20 @@ export default function Explore() {
             Discover and connect with talented professionals from around the world.
           </p>
         </div>
-        
+        {mentors ?
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {mentors.map((profile, index) => (
             <MentorCard key={index} mentor={profile} />
           ))}
         </div>
+        : 
+        <div  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <MentorCardSkeleton/>
+        <MentorCardSkeleton/>
+        <MentorCardSkeleton/>
+        <MentorCardSkeleton/>
+        </div>
+        }
       </div>
     </main>
   </div>

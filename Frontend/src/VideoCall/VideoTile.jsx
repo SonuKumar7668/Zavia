@@ -5,8 +5,15 @@ import React from "react";
  * - If participant.stream is available, attach it to a <video> element (integration point).
  * - Otherwise show circular avatar with initials.
  */
-export default function VideoTile({ participant }) {
+export default function VideoTile({ participant, stream }) {
   const { name, initials, cameraOn, muted } = participant;
+  const videoRef = React.useRef();
+  React.useEffect(() => {
+    if (stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+    console.log("stream", stream);
+  }, [stream]);
 
   return (
     <div className="relative rounded-xl overflow-hidden bg-black/30 flex items-center justify-center">
@@ -19,6 +26,7 @@ export default function VideoTile({ participant }) {
             autoPlay
             playsInline
             muted={muted}
+            ref={videoRef}
             // poster fallback or src can be added for static preview
           />
         </div>

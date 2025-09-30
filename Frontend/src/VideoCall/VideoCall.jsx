@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import VideoTile from "./VideoTile";
 import CallControls from "./CallControls";
 import ChatSidebar from "./ChatSidebar";
+import { useSocket } from "../context/SocketProvider";
+import { useLocation, useParams } from "react-router";
+import peer from "../service/peer";
 
 /**
  * VideoCall - main layout component
@@ -13,10 +16,32 @@ export default function VideoCall() {
     { id: "me", name: "Yash Nema", initials: "Y", cameraOn: false, muted: true, stream: null },
     { id: "mentor", name: "Ava Mentor", initials: "A", cameraOn: true, muted: false, stream: null }
   ]);
-
-  const [chatOpen, setChatOpen] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
   const [callActive, setCallActive] = useState(true);
   const [timerSeconds, setTimerSeconds] = useState(0);
+  const [videoRef, setVideoRef] = React.useState(null);
+  const [remoteVideoRef, setRemoteVideoRef] = React.useState(null);
+  const [roomId,setRoomId] = useState();
+
+  const {id} = useParams();
+  const socket = useSocket();
+  useEffect(()=>{async function startCall(){
+    console.log(id);
+    setRoomId(id);
+    socket.emit("join:room",id);
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    setVideoRef(stream);
+  }
+  startCall();
+},[]);
+
+  const sendStream = useCallback(() => {
+    console.log(peer);
+    if(!videoRef) return;
+    videoRef.getTracks().forEach((track) => {
+      peer.peer.addTrack(track, videoRef);
+    });
+  }, [videoRef]);
 
   useEffect(() => {
     let t;
@@ -48,6 +73,31 @@ export default function VideoCall() {
     setParticipants([]);
   };
 
+  const handleRoomJoined = useCallback(({room,socketId}) => {
+    console.log(`Joined room ${room} with ID ${socketId}`);
+    socket.emit("check:ready",roomId);
+  })
+
+  const handleRoomFull = useCallback(() => {
+    console.log("room full");
+  })
+
+  const handleReady = useCallback(()=>{
+    console.log("ready");
+    sendStream();
+  })
+
+  useEffect(() => {
+    socket.on("room:joined",handleRoomJoined);
+    socket.on("room:full",handleRoomFull);
+    socket.on("ready",handleReady);
+    return ()=>{
+      socket.off("room:joined",handleRoomJoined);
+      socket.off("room:full",handleRoomFull);
+      socket.off("ready",handleReady);
+    }
+  },[handleRoomJoined,socket,handleReady]);
+
   // Layout: left = video area, right = chat (toggle-able)
   return (
     <div className="flex h-screen bg-black text-white">
@@ -70,10 +120,14 @@ export default function VideoCall() {
                 <p className="text-sm text-white/80 mt-2">You left the meeting.</p>
               </div>
             ) : (
+              // <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 gap-4">
+              //   {participants.map(p => (
+              //     <VideoTile key={p.id} participant={p} />
+              //   ))}
+              // </div>
               <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 gap-4">
-                {participants.map(p => (
-                  <VideoTile key={p.id} participant={p} />
-                ))}
+              <VideoTile participant={participants[0]} stream = {remoteVideoRef}/>
+              <VideoTile participant={participants[1]} stream = {videoRef} />
               </div>
             )}
           </div>
