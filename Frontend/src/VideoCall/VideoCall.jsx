@@ -41,7 +41,7 @@ export default function VideoCall() {
   }
 
   useEffect(()=>{
-    userMedia();
+    if(videoStatus || audioStatus) userMedia();
     const peer = new Peer();
     peer.on("open", (id) => {
       console.log("My peer ID is: " + id);
@@ -62,7 +62,7 @@ export default function VideoCall() {
 
   const call = (remotePeerId) => {
     let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-      getUserMedia({ video: videoStatus, audio: audioStatus }, (stream)=>{
+      getUserMedia({ video: true, audio: true }, (stream)=>{
         const call = peerInstance.current.call(remotePeerId,stream);
 
         call.on('stream',(stream)=>{
