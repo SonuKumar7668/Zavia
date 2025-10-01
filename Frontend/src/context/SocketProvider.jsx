@@ -11,7 +11,7 @@ export const useSocket = () =>{
 
 export const SocketProvider=(props)=> {
     const backend = import.meta.env.VITE_BACKEND_API;
-    const socket = useMemo(()=> io("http://localhost:8080"),[]);
+    const socket = useMemo(()=> io(backend),[]);
 
   return (
     <socketContext.Provider value={socket}>
