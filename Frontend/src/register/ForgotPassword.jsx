@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import {EyeClosed, Eye} from "lucide-react";
 import {Link, useNavigate} from "react-router";
 import { jwtDecode } from "jwt-decode";
+import axios from 'axios';
 
 // The main App component containing the registration form.
-const Login = () => {
+const ForgotPassword = () => {
   const navigate = useNavigate();
     const api = import.meta.env.VITE_BACKEND_API;
     // console.log(api);
@@ -49,28 +50,19 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
   const submitForm = async ()=>{
+    const backend = import.meta.env.VITE_BACKEND_API
     console.log("submiting form");
-    const response = await fetch(`${api}/user/login`,{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify(formData)
-    });
-    const data = await response.json();
-    if(data.success){
-      setSubmissionStatus('success');
-      const decoded = jwtDecode(data.token);
-      console.log("decoded token",decoded);
-        localStorage.setItem("token",data.token);
-        localStorage.setItem("name",decoded.name);
-        localStorage.setItem("role",decoded.role);
-        localStorage.setItem("userId",decoded.id);
-        navigate("/");
-        window.location.reload();
-    }else{
-      setSubmissionStatus('error');
-        console.log("Invalid Credentials");
+    try{
+    const response = await axios.put(`${backend}/user/forgotpassword`,formData);
+    if(response.status === 201){
+        navigate('/login');
+    }
+    }catch(err){
+        console.log("response :",err.response.data.message);
+        const newError={};
+        newError.email=err.response.data.message;
+        newError.password= "";
+        setErrors(newError);
     }
   }
 
@@ -82,7 +74,6 @@ const Login = () => {
 
     if (validateForm()) {
       submitForm();
-      console.log('Form data submitted:', formData);
       // Clear the form after successful submission
       setFormData({
         email: '',
@@ -97,7 +88,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Login to Your Account</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Change Password</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
@@ -165,24 +156,12 @@ const Login = () => {
             type="submit"
             className="w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-xl transition-colors duration-300"
           >
-            Login
+            Send
           </button>
         </form>
-
-        <p className="mt-6 text-center text-gray-500">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-primary hover:text-secondary font-semibold">
-            Register here
-          </Link>
-        </p>
-        <p className="mt-6 text-center text-gray-500">
-          <Link to="/forgotPassword" className="text-primary hover:text-secondary font-semibold">
-            Forgot Password
-          </Link>
-        </p>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default ForgotPassword;

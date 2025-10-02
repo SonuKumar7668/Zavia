@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useParams } from 'react-router';
 
 
-export default function ProfilePage() {
+export default function Dashboard() {
   const {id} = useParams();
   const [session, setSession] = React.useState([]);
   useEffect(() => {
