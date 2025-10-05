@@ -1,12 +1,13 @@
 import React from "react";
+import { useMemo } from "react";
 
 /**
  * VideoTile
  * - If participant.stream is available, attach it to a <video> element (integration point).
  * - Otherwise show circular avatar with initials.
  */
-export default function VideoTile({ participant, stream }) {
-  const { name, initials, cameraOn, muted } = participant;
+function VideoTile({ participant,videoStatus=true,audioStatus=true, stream }) {
+  const { name="mentor", initials, cameraOn="true", muted="false" } = participant;
   const videoRef = React.useRef();
   React.useEffect(() => {
     if (stream && videoRef.current) {
@@ -17,7 +18,7 @@ export default function VideoTile({ participant, stream }) {
 
   return (
     <div className="relative rounded-xl overflow-hidden bg-black/30 flex items-center justify-center">
-      {cameraOn ? (
+      {videoStatus ? (
         // Replace srcObject mapping when integrating real streams
         <div className="w-full h-full">
           <video
@@ -25,7 +26,7 @@ export default function VideoTile({ participant, stream }) {
             className="w-full h-full object-cover"
             autoPlay
             playsInline
-            muted={muted}
+            muted={audioStatus}
             ref={videoRef}
             // poster fallback or src can be added for static preview
           />
@@ -55,3 +56,4 @@ export default function VideoTile({ participant, stream }) {
     </div>
   );
 }
+export default VideoTile;

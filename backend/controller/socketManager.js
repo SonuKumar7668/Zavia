@@ -45,6 +45,18 @@ const connectServer = (server)=>{
             socket.to(room).emit("receive_message",data);
         });
 
+        socket.on("leave:room",(room)=>{
+            console.log(`User with ID: ${socket.id} left room: ${room}`);
+            socket.leave(room);
+            if(rooms[room]){
+                rooms[room] = rooms[room].filter(user => user.socketId !== socket.id);
+                if(rooms[room].length === 0){
+                    delete rooms[room];
+                }
+            }
+            socket.to(room).emit("user:left",socket.id);
+        })
+
         socket.on("disconnect",()=>{
             console.log("User disconnected",socket.id);
             for(let room in rooms){
