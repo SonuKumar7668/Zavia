@@ -80,11 +80,11 @@ export default function MentorSlider() {
         {mentors.map((mentor) => (
           <SwiperSlide key={mentor.id}>
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition p-4">
-              <div className="relative">
+              <div className="relative flex justify-center items-center bg-gray-100 rounded-lg overflow-hidden">
                 <img
                   src={mentor.img}
                   alt={mentor.title}
-                  className="w-full h-48 object-cover rounded-lg"
+                  className="w-full h-56 object-contain rounded-lg transition-transform duration-300 hover:scale-105"
                 />
                 <span className="absolute top-2 left-2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full">
                   {mentor.tag}
@@ -98,7 +98,7 @@ export default function MentorSlider() {
                     <img
                       src={mentor.img}
                       alt={mentor.name}
-                      className="w-10 h-10 rounded-full object-cover"
+                      className="w-10 h-10 rounded-full object-contain border border-gray-200"
                     />
                     <div>
                       <p className="font-medium text-gray-800">{mentor.name}</p>

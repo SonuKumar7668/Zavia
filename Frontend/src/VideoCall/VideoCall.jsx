@@ -6,7 +6,6 @@ import { useSocket } from "../context/SocketProvider";
 import { useLocation, useParams } from "react-router";
 import Peer from "peerjs";
 
-
 export default function VideoCall() {
   const [participants, setParticipants] = useState([
     // Example participant objects; replace with live stream refs or objects from your RTC layer
