@@ -66,8 +66,8 @@ export default function MentorProfile() {
   }
 
   return (
-    <div className=" bg-white flex justify-center px-4 pb-12">
-      <div className="bg-white max-w-3xl w-full rounded-2xl shadow-xl p-8 border border-gray-200">
+    <div className=" min-h-screen bg-white flex flex-col px-8 py-12">
+      <div className="bg-white w-full p-12 border-t border-b border-gray-300">
         {/* Profile Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <img
@@ -120,8 +120,8 @@ export default function MentorProfile() {
         </div>
 
         {/* Buttons */}
-        <div className="mt-8 flex flex-wrap gap-4">
-          <button onClick={bookSession} className="cursor-pointer flex-1 bg-primary hover:bg-secondary text-white py-2 rounded-lg font-medium" >
+        <div className="mt-12 flex justify-center">
+          <button onClick={bookSession} className="cursor-pointer bg-primary hover:bg-secondary text-white py-4.5 px-16 rounded-md font-medium text-sm transition-all duration-200" >
             {booked ? <span>Meeting booked</span> : <span>Book Meeting</span>}
           </button>
         </div>
