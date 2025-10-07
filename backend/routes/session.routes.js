@@ -14,8 +14,9 @@ router.get("/check/:id",verifyToken,async (req,res)=>{
     const mentorId = req.params.id;
     const menteeId = req.user.id;
     const session = await sessionModel.find({mentorId,menteeId}).populate('mentorId');
+    const upcomingSession = await sessionModel.find({mentorId,menteeId,status:"upcoming"});
     let booked = false;
-    if(session.length > 0){
+    if(upcomingSession.length > 0){
         booked = true;
     }
 

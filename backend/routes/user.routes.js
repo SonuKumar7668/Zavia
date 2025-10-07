@@ -60,4 +60,19 @@ router.post("/mentor/create",varifyToken,async (req,res)=>{
     return res.status(200).json({msg:"Mentor request received"});
 })
 
+router.put("/forgotpassword",async (req,res)=>{
+    let {email,password} = req.body;
+    let user =await userModel.findOne({email});
+    console.log(user.password);
+    if(!user){
+        console.log("not exist");
+        return res.status(404).json({message:"Email does not exist"});
+    }
+    const hashedPassword = await bcrypt.hash(password,salt);
+    user.password = hashedPassword;
+    console.log(user.password);
+    await user.save();
+    res.status(201).json("password changed");
+})
+
 module.exports = router;
