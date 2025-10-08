@@ -30,44 +30,30 @@ export default function Dashboard() {
       <div>
         <h2 className='text-2xl font-bold text-gray-800 text-center mt-8 mb-4'>Upcoming Sessions</h2>
         
-        {session.map((sess)=>{
+        {session.map((sess,index)=>
           
-          return (
-            <>
-            {sess.status === "upcoming" &&
-          <SessionCard key={sess._id} session={sess}/>
-          }
-          </>
-        );
-        })}
+            sess.status === "upcoming" && (
+          <SessionCard key={index} session={sess}/>)
+          
+        )}
       </div>
       <div>
         <h2 className='text-2xl font-bold text-gray-800 text-center mt-8 mb-4'>completed Sessions</h2>
         
-        {session.map((sess)=>{
-          
-          return (
-            <>
+        {session.map((sess)=>
             {sess.status === "completed" &&
-          <SessionCard key={sess._id} session={sess}/>
+          (<SessionCard key={sess._id} session={sess}/>)
           }
-          </>
-        );
-        })}
+        )}
       </div>
       <div>
         <h2 className='text-2xl font-bold text-gray-800 text-center mt-8 mb-4'>Cancled Sessions</h2>
         
-        {session.map((sess)=>{
-          
-          return (
-            <>
+        {session.map((sess)=>
             {sess.status === "cancled" &&
-          <SessionCard key={sess._id} session={sess}/>
+          (<SessionCard key={sess._id} session={sess}/>)
           }
-          </>
-        );
-        })}
+        )}
       </div>
     </div>
   )

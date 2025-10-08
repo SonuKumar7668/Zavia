@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, use } from "react";
 import VideoTile from "./VideoTile";
 import CallControls from "./CallControls";
 import ChatSidebar from "./ChatSidebar";
 import { useSocket } from "../context/SocketProvider";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import Peer from "peerjs";
+import axios from "axios";
 
 export default function VideoCall() {
-
+  const navigate = useNavigate();
   const [chatOpen, setChatOpen] = useState(false);
   const [callActive, setCallActive] = useState(true);
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -113,6 +114,7 @@ export default function VideoCall() {
     setCallActive(false);
     // For demo: clear participants
     setParticipants([]);
+    navigate(`/session/${id}/feedback`);
   };
 
   const handleRoomJoined = useCallback(({ room, socketId }) => {

@@ -12,7 +12,8 @@ import VideoCall from "./VideoCall/VideoCall";
 import { SocketProvider } from "./context/SocketProvider";
 import Dashboard from "./dashboard/Dashboard";
 import EditDashboard from "./Forms/EditDashboard";
-import ForgotPassword from "./register/ForgotPassword"
+import ForgotPassword from "./register/ForgotPassword";
+import FeedbackForm from "./Forms/FeedBackForm";
 
 function App() {
   const location = useLocation();
@@ -35,8 +36,9 @@ function App() {
             <VideoCall />
           </SocketProvider>
         } />
+        <Route path="/session/:id/feedback" element={<FeedbackForm/>}/>
         <Route path="/forgotPassword" element={<ForgotPassword/>} />
-        <Route path="*" element={<h1>404 Not Found</h1>} />
+        <Route path="*" element={<h1>Page Not Found</h1>} />
       </Routes>
       {!HideHeader && <Footer />}
     </>

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const sessionModel = require('../models/sessionModel');
 const mentorModel = require('../models/mentorModel');
+const reviewModel = require('../models/reviewModel');
 const verifyToken = require('../middlewares/verifyToken');
 const {nanoid} = require('nanoid');
 
@@ -58,5 +59,40 @@ router.post("/cancel",verifyToken,async (req,res)=>{
     await session.save();
     return res.status(200).json({success:true,message:"Session canclled successfully"});
 });
+
+router.get("/:id",verifyToken,async (req,res)=>{
+    const sessionId = req.params.id;
+    const userId = req.user.id;
+    const session = await sessionModel.findById(sessionId);
+    if(!session){
+        return res.status(404).json({success:false,message:"Session not found"});
+    }
+    if(session.menteeId.toString() !== userId){
+        return res.status(403).json({success:false,message:"You are not authorized to view this session"});
+    }
+    return res.status(200).json({success:true,session});
+});
+
+router.post("/feedback/submit",verifyToken,async (req,res)=>{
+    console.log(req.body);
+    const {rating,feedback,sessionId} = req.body;
+    const userId = req.user.id;
+    const session = await sessionModel.findById(sessionId);
+    if(!session){
+        return res.status(404).json({success:false,message:"Session not found"});
+    }
+    if(session.menteeId.toString() !== userId){
+        return res.status(403).json({success:false,message:"You are not authorized to give feedback for this session"});
+    }
+    let newReview = new reviewModel({
+        rating,
+        feedback,
+        sessionId
+    });
+    session.review = newReview._id;
+    await newReview.save();
+    await session.save();
+    return res.status(200).json({success:true,message:"Feedback submitted successfully"});
+})
 
 module.exports = router;

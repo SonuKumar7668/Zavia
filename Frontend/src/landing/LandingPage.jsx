@@ -16,7 +16,7 @@ export default function LandingPage() {
       <FeaturedMentors />
       <SuccessStories />
       {/* <ProfileCard/> */}
-      <MentorSlider/>
+      {/* <MentorSlider/> */}
       {/* <MentorProfile/> */}
     </div>
   )
