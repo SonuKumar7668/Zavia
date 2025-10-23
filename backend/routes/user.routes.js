@@ -41,7 +41,6 @@ router.post("/login",async (req,res)=>{
     if(!isMatch){
         return res.status(400).json({msg:"Invalid credentials"});
     }
-    console.log("matched");
     const token = jwt.sign({id:user._id,role:user.role,name:user.name},JWT_SECRET,{expiresIn:"7d"});
     res.status(200).json({success:"true",token});
 })
@@ -63,14 +62,12 @@ router.post("/mentor/create",varifyToken,async (req,res)=>{
 router.put("/forgotpassword",async (req,res)=>{
     let {email,password} = req.body;
     let user =await userModel.findOne({email});
-    console.log(user.password);
     if(!user){
         console.log("not exist");
         return res.status(404).json({message:"Email does not exist"});
     }
     const hashedPassword = await bcrypt.hash(password,salt);
     user.password = hashedPassword;
-    console.log(user.password);
     await user.save();
     res.status(201).json("password changed");
 })

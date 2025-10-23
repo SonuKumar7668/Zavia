@@ -42,7 +42,6 @@ router.post("/create",verifyToken,async (req,res)=>{
 });
 
 router.post("/cancel",verifyToken,async (req,res)=>{
-    console.log("canceling session");
     const {sessionId} = req.body;
     const menteeId = req.user.id;
     const session = await sessionModel.findById(sessionId);
@@ -74,7 +73,6 @@ router.get("/:id",verifyToken,async (req,res)=>{
 });
 
 router.post("/feedback/submit",verifyToken,async (req,res)=>{
-    console.log(req.body);
     const {rating,feedback,sessionId} = req.body;
     const userId = req.user.id;
     const session = await sessionModel.findById(sessionId);

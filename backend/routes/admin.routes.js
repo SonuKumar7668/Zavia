@@ -16,7 +16,6 @@ router.post("/mentor/:status",verifyToken,verifyAdmin,async (req,res)=>{
         return res.status(404).json({msg:"Mentor not found"});
     }
     mentor.status = status;
-    console.log("mentor status: ",mentor);
     await mentor.save();
     return res.status(200).json({msg:"Mentor approved successfully"});
 });

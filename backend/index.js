@@ -11,6 +11,7 @@ const cors = require("cors");
 require('dotenv').config();
 const url = process.env.DB_URL;
 const port = process.env.PORT ||8080;
+const morgan = require("morgan");
 app.use(cors());
 
 const userRoutes = require("./routes/user.routes");
@@ -19,6 +20,7 @@ const adminRoutes = require("./routes/admin.routes");
 const sessionRoutes = require("./routes/session.routes");
 const verifyToken = require("./middlewares/verifyToken");
 
+app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(bodyParser.urlencoded());
@@ -35,9 +37,9 @@ app.use("/user",userRoutes);
 app.use("/admin",adminRoutes);
 app.use("/mentor",mentorRoutes);
 app.use("/session",sessionRoutes);
-// app.all("*", (req, res) => {
-//     res.status(404).json({ message: "Route not found" });
-// });
+app.use((req, res) => {
+    res.status(404).json({ message: "Route not found" });
+});
 
 server.listen(port,async()=>{
     console.log(`app is listening at -> ${port}`);
