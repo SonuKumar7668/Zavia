@@ -3,10 +3,7 @@ import Hero from "../components/Hero";
 import WhyChooseUs from "../components/WhyChooseUs";
 import FeaturedMentors from "../components/FeaturesMentors";
 import SuccessStories from "../components/SuccessStories";
-import Footer from "../components/Footer";
-import ProfileCard from "../components/ProfileCard";
-import MentorSlider from "../components/MentorSlider";
-// import MentorProfile from "../components/MentorProfile";
+import ChatBotLink from '../components/ChatbotLink';
 
 export default function LandingPage() {
   return (
@@ -14,10 +11,8 @@ export default function LandingPage() {
       <Hero />
       <WhyChooseUs />
       <FeaturedMentors />
+      <ChatBotLink/>
       <SuccessStories />
-      {/* <ProfileCard/> */}
-      {/* <MentorSlider/> */}
-      {/* <MentorProfile/> */}
     </div>
   )
 }

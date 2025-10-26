@@ -60,11 +60,12 @@ function Header() {
 
         {/* Navbar */}
         <nav className="hidden md:flex space-x-6 font-medium">
-          <Link to="/" className="hover:text-blue-600">Home</Link>
-          {role === "mentor" ? <Link to={`/dashboard/${mentorId}`} className="hover:text-blue-600">Dashboard</Link> :
-            <Link to="/form" className="hover:text-blue-600">Onboard</Link>
+          <Link to="/" className="hover:text-primary">Home</Link>
+          {role === "mentor" ? <Link to={`/dashboard/${mentorId}`} className="hover:text-primary">Dashboard</Link> :
+            <Link to="/form" className="hover:text-primary">Onboard</Link>
           }
-          <Link to="/explore" className="hover:text-blue-600">Explore</Link>
+          <Link to="/chat" className="hover:text-primary">Chat</Link>
+          <Link to="/explore" className="hover:text-primary">Explore</Link>
           {/* <Link to="#why" className="hover:text-blue-600">Why Us</Link> */}
           {/* <Link to="#stories" className="hover:text-blue-600">Stories</Link> */}
 

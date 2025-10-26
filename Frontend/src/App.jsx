@@ -14,10 +14,12 @@ import Dashboard from "./dashboard/Dashboard";
 import EditDashboard from "./Forms/EditDashboard";
 import ForgotPassword from "./register/ForgotPassword";
 import FeedbackForm from "./Forms/FeedBackForm";
+import Chatbot from "./Chat/ChatBot";
 
 function App() {
   const location = useLocation();
-  const HideHeader = location.pathname.startsWith("/videocall");
+  const pathsToHide = ["/videocall", "/chat"];
+  const HideHeader = pathsToHide.some(path => location.pathname.startsWith(path));
   return (
     <>
 
@@ -38,6 +40,7 @@ function App() {
         } />
         <Route path="/session/:id/feedback" element={<FeedbackForm/>}/>
         <Route path="/forgotPassword" element={<ForgotPassword/>} />
+        <Route path="/chat" element={<Chatbot/>} />
         <Route path="*" element={<h1>Page Not Found</h1>} />
       </Routes>
       {!HideHeader && <Footer />}
