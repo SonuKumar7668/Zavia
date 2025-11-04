@@ -5,6 +5,22 @@ const verifyToken = require("../middlewares/verifyToken");
 //const verifyToken = require("../utils/verifyToken");
 
 router.get("/",async (req,res)=>{
+    const {search} = req.query;
+    if(search){
+        let mentors = await mentorModel.find({
+            $or: [
+                { name: { $regex: search, $options: 'i' } },
+                { skills: { $regex: search, $options: 'i' } },
+                { bio: { $regex: search, $options: 'i' } },
+                { profession: { $regex: search, $options: 'i' } },
+                { language: { $regex: search, $options: 'i' } },
+                { country: { $regex: search, $options: 'i' } },
+                { state: { $regex: search, $options: 'i' } },
+                { city: { $regex: search, $options: 'i' } },
+            ]
+        });
+        return res.status(200).json(mentors);
+    }
     let mentors = await mentorModel.find();
     return res.status(200).json(mentors);
 });

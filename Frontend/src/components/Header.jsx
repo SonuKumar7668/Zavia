@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Search } from "lucide-react";
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState(localStorage.getItem("role") || null);
@@ -21,6 +22,13 @@ function Header() {
     }
     getMentorId();
   }, [role])
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const query = e.target[0].value;
+    if (query.trim() === "") return;
+    window.location.href = `/explore?search=${encodeURIComponent(query)}`;
+  }
 
   useEffect(() => {
     async function verifyToken() {
@@ -56,6 +64,18 @@ function Header() {
         <div className="flex items-center space-x-2">
           <img src="https://i.ibb.co/RpYtQM5Y/logo.png" alt="Zavia" className="w-10 h-10" />
           <h1 className="text-xl font-bold text-primary"><Link to="/">Zavia</Link></h1>
+        </div>
+
+        {/* Search bar  */}
+        <div>
+          <form className="flex" onSubmit={handleSearch}>
+          <input
+            type="search"
+            placeholder="Search mentors..."
+            className="hidden md:block border border-gray-300 rounded-full px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          <button className="ml-4 cursor-pointer text-primary"><Search /></button>
+          </form>
         </div>
 
         {/* Navbar */}

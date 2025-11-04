@@ -2,21 +2,28 @@ import React,{useEffect,useState} from 'react'
 import MentorCard from '../components/MentorCard';
 import MentorCardSkeleton from '../skeleton/MentorCardSkeleton';
 import axios from 'axios';
+import { useLocation } from 'react-router';
 export default function Explore() {
   const [mentors,setMentors]=useState(null);
+  const location=useLocation();
+
+  const queryParams=new URLSearchParams(location.search);
+  const searchQuery=queryParams.get('search') || '';
 
   useEffect(() => {
-    const fetchMentors = async () => {
+    const fetchMentors = async (searchQuery) => {
       const backend=import.meta.env.VITE_BACKEND_API;
       try {
-        const response = await axios.get(`${backend}/mentor`); // Replace with your API endpoint
+        const response = await axios.get(`${backend}/mentor`,{
+          params: { search: searchQuery }
+        }); // Replace with your API endpoint
         setMentors(response.data);
       } catch (error) {
         console.error('Error fetching mentors:', error);
       }
     };
 
-    fetchMentors();
+    fetchMentors(searchQuery);
   },[]);
 
   return (

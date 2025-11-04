@@ -31,11 +31,18 @@ router.post("/", async (req, res) => {
       Please present the suggestions as a clear, professionally formatted list.
     `;
 
+    // const prompt = `
+    // You are a helpful and friendly AI assistant. Respond naturally to the user's message, maintaining context and clarity.
+    // User: ${message}
+
+    // `
+
     const result = await model.generateContent({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
         maxOutputTokens: 512, // limit output to ~256 tokens (~200 words)
-      }});
+      }
+    });
     const text = result.response.text();
 
     if (!text) {
