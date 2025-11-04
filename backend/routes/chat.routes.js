@@ -22,13 +22,9 @@ router.post("/", async (req, res) => {
     const model = ai.getGenerativeModel({ model: "models/gemini-2.5-flash-lite" });
 
     const prompt = `
-      You are a professional career guidance chatbot. Based on the user's interests,
-      suggest 3–5 relevant career fields they should explore for mentorship.
-      Provide a brief explanation for each suggestion. Maintain a professional and encouraging tone.
-
-      User interests: ${message}
-
-      Please present the suggestions as a clear, professionally formatted list.
+    You are a professional mentor AI assistant for carrer guidence. 
+    Respond accordingly to the user's message, maintaining context and clarity , also suggest 2 to 3 careers about what user is asking do not answer any inappropriate questions.    
+      User:${message}
     `;
 
     // const prompt = `
