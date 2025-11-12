@@ -5,7 +5,7 @@ export default function MentorRow({ mentor, onApprove, onReject }) {
   return (
     <tr className="border-b hover:bg-gray-50">
       <td className="px-4 py-3 text-sm">
-        <Link to={`/pending-mentors/${mentor._id}`} className="text-indigo-600 hover:underline">
+        <Link to={`/pending/${mentor._id}`} className="text-indigo-600 hover:underline">
           {mentor._id}
         </Link>
       </td>
@@ -32,7 +32,7 @@ export default function MentorRow({ mentor, onApprove, onReject }) {
         {mentor.country ? `${mentor.city ? mentor.city + ', ' : ''}${mentor.country}` : '—'}
       </td>
 
-      <td className="px-4 py-3 text-sm">
+      {/* <td className="px-4 py-3 text-sm">
         <div className="flex gap-2">
           <button
             onClick={() => onApprove(mentor._id)}
@@ -47,7 +47,7 @@ export default function MentorRow({ mentor, onApprove, onReject }) {
             Reject
           </button>
         </div>
-      </td>
+      </td> */}
     </tr>
   )
 }

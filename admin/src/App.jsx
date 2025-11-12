@@ -19,6 +19,7 @@ function App() {
             <Routes>
               <Route path="/" element={<PendingMentors/>} />
               <Route path="/pending-mentors/:id" element={<MentorDetail />} />
+              <Route path="/pending/:id" element={<MentorDetail />} />
               <Route path="*" element={<DummyPage/>}/>
             </Routes>
           </div>

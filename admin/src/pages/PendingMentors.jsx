@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import MentorRow from '../components/MentorRow'
+import axios from 'axios';
 import { sampleMentors } from '../lib/sampleData'
 
 export default function PendingMentors() {
@@ -15,14 +16,12 @@ export default function PendingMentors() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/admin/mentors/pending', { credentials: 'include' })
-      if (!res.ok) {
+      const apiUrl = import.meta.env.VITE_BACKEND_API || '';
+      const res = await axios.get(`${apiUrl}/admin/mentors/pending/pending`);
+      
         // fallback to sample data if API not reachable
-        setMentors(sampleMentors.filter(m => m.status === 'pending'))
-      } else {
-        const data = await res.json()
-        setMentors(data.mentors || [])
-      }
+        console.log(res.data);
+        setMentors(res.data || [])
     } catch (err) {
         console.log(err);
       setMentors(sampleMentors.filter(m => m.status === 'pending'))
@@ -77,7 +76,6 @@ export default function PendingMentors() {
                 <th className="px-4 py-2">Mentor</th>
                 <th className="px-4 py-2">Skills</th>
                 <th className="px-4 py-2">Location</th>
-                <th className="px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody>

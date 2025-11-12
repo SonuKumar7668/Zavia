@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
-import { sampleMentors } from '../lib/sampleData'
+import axios from 'axios';
 
 function InfoRow({ label, value }) {
   return (
@@ -27,16 +27,10 @@ export default function MentorDetail() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`/api/admin/mentors/${id}`, { credentials: 'include' })
-      if (!res.ok) {
-        // fallback to sample data
-        const found = sampleMentors.find(m => m._id === id)
-        if (found) setMentor(found)
-        else throw new Error('Mentor not found')
-      } else {
-        const data = await res.json()
-        setMentor(data.mentor)
-      }
+      const apiUrl = import.meta.env.VITE_BACKEND_API || '';
+      const res = await axios.get(`${apiUrl}/admin/mentors/${id}`);
+        setMentor(res.data);
+        console.log(mentor);
     } catch (err) {
       setError(err.message || 'Failed to load')
     } finally {
@@ -49,7 +43,7 @@ export default function MentorDetail() {
     try {
       await fetch(`/api/admin/mentors/${id}/approve`, { method: 'POST', credentials: 'include' })
       alert('Approved')
-      navigate('/pending-mentors')
+      navigate('/')
     } catch (err) {
       alert('Approve failed: ' + err.message)
     }
@@ -66,7 +60,7 @@ export default function MentorDetail() {
         body: JSON.stringify({ reason }),
       })
       alert('Rejected')
-      navigate('/pending-mentors')
+      navigate('/')
     } catch (err) {
       alert('Reject failed: ' + err.message)
     }
