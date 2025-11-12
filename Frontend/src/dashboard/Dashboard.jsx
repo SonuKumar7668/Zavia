@@ -12,14 +12,13 @@ export default function Dashboard() {
     const getSessions = async () => {
       if(!localStorage.getItem("token")) return;
       const backendUrl = import.meta.env.VITE_BACKEND_API;
-      const response = await axios.get(`${backendUrl}/session/check/${id}`, {
+      const response = await axios.get(`${backendUrl}/session/mentor/${id}`, {
         headers: {
           Authorization: `${localStorage.getItem("token")}`
         }
       });
       setSession(response.data.session);
       // Placeholder for fetching sessions logic
-      console.log("Fetching sessions...");
     };
     getSessions();
   },[id])
@@ -49,11 +48,12 @@ export default function Dashboard() {
       <div>
         <h2 className='text-2xl font-bold text-gray-800 text-center mt-8 mb-4'>Cancled Sessions</h2>
         
-        {session.map((sess)=>
-            {sess.status === "cancled" &&
-          (<SessionCard key={sess._id} session={sess}/>)
-          }
-        )}
+        {session.map((sess,index)=>
+          
+          sess.status === "cancled" && (
+        <SessionCard key={index} session={sess}/>)
+        
+      )}
       </div>
     </div>
   )

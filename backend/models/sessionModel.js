@@ -19,7 +19,7 @@ const sessionSchema = new Schema({
     status:{
         type:String,
         enum:["upcoming","completed","cancled"],
-        default:"pending"
+        default:"upcoming"
     },
     time:Date,
 }, { timestamps: true });

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import axios from 'axios';
 import dayjs from 'dayjs';
 
 const SessionCard = ({ session }) => {
@@ -9,10 +8,8 @@ const SessionCard = ({ session }) => {
   const [sessionsCompleted, setSessionsCompleted] = useState(session.sessionsCompleted || 0);
   const [expiryDate, setExpiryDate] = useState(null);
 
-  const mentor = session.mentorId;
+  const mentor = session.menteeId;
   const navigate = useNavigate();
-
-  console.log(status);
   useEffect(() => {
     setStatus(session.status);
     setSessionsCompleted(session.sessionsCompleted || 0);
@@ -24,11 +21,11 @@ const SessionCard = ({ session }) => {
 
     // Color indicator based on status
     const color =
-      status === 'completed'
+      status === 'upcoming'
         ? 'bg-green-500'
-        : status === 'cancelled'
+        : status === 'cancled'
         ? 'bg-red-500'
-        : status === 'expired'
+        : status === 'completed'
         ? 'bg-gray-400'
         : 'bg-yellow-500';
 
@@ -38,29 +35,27 @@ const SessionCard = ({ session }) => {
   const joinSession = (e) => {
     e.preventDefault();
     if (sessionsCompleted >= 3 || status === 'expired') return;
-    console.log('Joined:', session._id);
     navigate(`/videocall/${session._id}`);
   };
 
-  const cancelSession = async () => {
-    const backend = import.meta.env.VITE_BACKEND_API;
-    try {
-      const response = await axios.post(
-        `${backend}/session/cancel`,
-        { sessionId: session._id },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `${localStorage.getItem('token')}`,
-          },
-        }
-      );
-      console.log('Cancelled:', response.data);
-      setStatus('cancelled');
-    } catch (error) {
-      console.error('Cancel failed:', error);
-    }
-  };
+  // const cancelSession = async () => {
+  //   const backend = import.meta.env.VITE_BACKEND_API;
+  //   try {
+  //     const response = await axios.post(
+  //       `${backend}/session/cancel`,
+  //       { sessionId: session._id },
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: `${localStorage.getItem('token')}`,
+  //         },
+  //       }
+  //     );
+  //     setStatus('cancelled');
+  //   } catch (error) {
+  //     console.log('Cancel failed:', error);
+  //   }
+  // };
 
   const sessionsRemaining = 3 - sessionsCompleted;
 
@@ -107,14 +102,14 @@ const SessionCard = ({ session }) => {
             </button>
           )}
 
-          {sessionsRemaining > 0 && status !== 'cancled' && (
+          {/* {sessionsRemaining > 0 && status !== 'cancled' && (
             <button
               onClick={cancelSession}
               className="px-3 py-1 text-sm font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 transition"
             >
               Cancel
             </button>
-          )}
+          )} */}
 
           {sessionsCompleted >= 3 && (
             <span className="text-xs text-green-600 font-semibold">Completed ✅</span>

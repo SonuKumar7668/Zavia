@@ -24,6 +24,12 @@ router.get("/check/:id",verifyToken,async (req,res)=>{
     return res.status(200).json({success:true,booked,session});
 });
 
+router.get("/mentor/:id",verifyToken,async (req,res)=>{
+    const mentorId = req.params.id;
+    const session = await sessionModel.find({mentorId}).populate('menteeId');
+    return res.status(200).json({success:true,session});
+})
+
 router.post("/create",verifyToken,async (req,res)=>{
     const {mentorId} = req.body;
     const menteeId = req.user.id;

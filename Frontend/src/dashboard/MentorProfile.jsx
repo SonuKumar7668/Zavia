@@ -61,6 +61,10 @@ export default function MentorProfile() {
     fetchMentor();
   }, [id])
 
+  const handleNavigate = ()=>{
+    navigate(`/mentor/profile/edit/${id}`);
+  }
+
   if (!mentor) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
@@ -120,9 +124,9 @@ export default function MentorProfile() {
         </div>
 
         {/* Buttons */}
-        <div className="mt-12 flex justify-center">
-          <button onClick={bookSession} className="cursor-pointer bg-primary hover:bg-secondary text-white py-4.5 px-16 rounded-md font-medium text-sm transition-all duration-200" >
-            {booked ? <span>Meeting booked</span> : <span>Book Meeting</span>}
+        <div className="mt-12 flex">
+          <button onClick={handleNavigate} className="cursor-pointer bg-primary hover:bg-secondary text-white py-4.5 px-16 rounded-md font-medium text-sm transition-all duration-200" >
+            Edit Profile
           </button>
         </div>
       </div>
