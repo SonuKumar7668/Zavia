@@ -15,6 +15,8 @@ import EditDashboard from "./Forms/EditDashboard";
 import ForgotPassword from "./register/ForgotPassword";
 import FeedbackForm from "./Forms/FeedBackForm";
 import Chatbot from "./Chat/ChatBot";
+import UserProfile from "./profile/UserProfile";
+import EditUserProfile from "./profile/EditUserProfile";
 
 function App() {
   const location = useLocation();
@@ -33,6 +35,8 @@ function App() {
         <Route path="/dashboard/:id" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/user/profile" element={<UserProfile />} />
+        <Route path="/user/profile/edit" element={<EditUserProfile />} />
         <Route path="/videocall/:id" element={
           <SocketProvider>
             <VideoCall />

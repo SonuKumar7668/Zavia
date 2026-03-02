@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, ChevronDown,ChevronUp } from "lucide-react";
 
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -91,16 +91,14 @@ function Header() {
         {/* Navbar */}
         <nav className="hidden md:flex space-x-6 font-medium items-center">
           <Link to="/" className="hover:text-primary">Home</Link>
-          {role === "mentor" ? (
-            <Link to={`/dashboard/${mentorId}`} className="hover:text-primary">Dashboard</Link>
-          ) : (
+          {role !== "mentor" && (
             <Link to="/form" className="hover:text-primary">Onboard</Link>
           )}
           <Link to="/chat" className="hover:text-primary">Chat</Link>
           <Link to="/explore" className="hover:text-primary">Explore</Link>
 
           {/* CTA */}
-          {isLoggedIn ? <Logout /> : <LoggedIn />}
+          {isLoggedIn ? <Logout mentorId={mentorId} role={role} /> : <LoggedIn />}
         </nav>
 
         {/* Mobile controls */}
@@ -188,16 +186,71 @@ const LoggedIn = () => {
   )
 }
 
-const Logout = () => {
+const Logout = ({ mentorId,role }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("name");
     localStorage.removeItem("role");
     window.location.reload();
   }
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <button onClick={logout} className="cursor-pointer hidden md:block border-2 border-primary hover:border-secondary  bg-white px-5 py-2 rounded-full shadow ">
-      Logout
-    </button>
-  )
+    <div className="relative" ref={dropdownRef}>
+      {/* User Name Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="cursor-pointer flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+      >
+        <span>{localStorage.getItem("name")}</span>
+        {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+
+      {/* Dropdown */}
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-sm">
+          <ul className="py-2 text-sm text-gray-600">
+            <li>
+              <Link
+                to="/user/profile"
+                className="block px-4 py-2 hover:bg-gray-50 transition"
+              >
+                Profile
+              </Link>
+            </li>
+            {role === "mentor" && (
+            <li>
+              <Link
+                to={`/dashboard/${mentorId}`}
+                className="block px-4 py-2 hover:bg-gray-50 transition"
+              >
+                Dashboard
+              </Link>
+            </li>
+            )}
+            <li>
+              <button
+                onClick={logout}
+                className="w-full bg-amber-300 rounded-lg text-left px-4 py-2 transition"
+              >
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 }

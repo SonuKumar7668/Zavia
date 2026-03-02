@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 
@@ -70,66 +70,109 @@ export default function MentorProfile() {
   }
 
   return (
-    <div className=" min-h-screen bg-white flex flex-col px-8 py-12">
-      <div className="bg-white w-full p-12 border-t border-b border-gray-300">
-        {/* Profile Header */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+<div className="min-h-screen bg-gray-50 px-6 py-12 flex justify-center">
+  <div className="w-full max-w-6xl bg-white rounded-2xl shadow-sm border border-gray-200 p-10">
+    
+    {/* Top Section */}
+    <div className="flex flex-col md:flex-row gap-10">
+      
+      {/* Left: Main Profile Info */}
+      <div className="flex-1">
+        
+        {/* Header */}
+        <div className="flex items-center gap-6">
           <img
-            src={"https://i.ibb.co/RpYtQM5Y/logo.png"}
+            src="https://i.ibb.co/RpYtQM5Y/logo.png"
             alt={mentor.name}
-            className="w-32 h-32 rounded-full border-4 border-primary object-cover"
+            className="w-28 h-28 rounded-full border border-gray-200 object-cover"
           />
-          <div className="text-center sm:text-left">
-            <h1 className="text-3xl font-bold text-gray-800">{mentor.name}</h1>
-            <p className="text-gray-500">{mentor.country}</p>
-            <p className="text-secondary font-medium">{mentor.currentJob}</p>
+          <div>
+            <h1 className="text-3xl font-semibold text-gray-900">
+              {mentor.name}
+            </h1>
+            <p className="text-gray-500 text-sm">{mentor.country}</p>
+            <p className="text-primary font-medium mt-1">
+              {mentor.currentJob}
+            </p>
           </div>
         </div>
 
         {/* Bio */}
-        <p className="mt-6 text-gray-700 leading-relaxed">{mentor.bio}</p>
-
-        {/* Details */}
-        <div className="mt-6 space-y-2 text-gray-700">
-          <p>
-            <strong>Education:</strong> {mentor.highestEducation}
-          </p>
-          <p>
-            <strong>Experience:</strong> {mentor.workExperience} years
-          </p>
-          <p>
-            <strong>Rate:</strong> {mentor.meetingCharge}/hr
-          </p>
-          <p>
-            <strong>Availability:</strong> {mentor.availability}___
-          </p>
-          <p>
-            <strong>Languages:</strong> {mentor.language.join(", ")}
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            About
+          </h2>
+          <p className="text-gray-600 leading-relaxed text-sm">
+            {mentor.bio}
           </p>
         </div>
 
         {/* Skills */}
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Skills</h2>
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">
+            Skills
+          </h2>
           <div className="flex flex-wrap gap-2">
             {mentor.skills.map((skill, i) => (
               <span
                 key={i}
-                className="px-3 py-1 bg-purple-100 text-primary text-sm rounded-full"
+                className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full"
               >
                 {skill}
               </span>
             ))}
           </div>
         </div>
-
-        {/* Buttons */}
-        <div className="mt-12 flex">
-          <button onClick={handleNavigate} className="cursor-pointer bg-primary hover:bg-secondary text-white py-4.5 px-16 rounded-md font-medium text-sm transition-all duration-200" >
-            Edit Profile
-          </button>
-        </div>
       </div>
+
+      {/* Right: Quick Info Card */}
+      <div className="w-full md:w-80 bg-gray-50 border border-gray-200 rounded-xl p-6 space-y-4">
+        
+        <div>
+          <p className="text-xs text-gray-400 uppercase">Education</p>
+          <p className="text-sm font-medium text-gray-800">
+            {mentor.highestEducation}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-400 uppercase">Experience</p>
+          <p className="text-sm font-medium text-gray-800">
+            {mentor.workExperience} years
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-400 uppercase">Rate</p>
+          <p className="text-sm font-medium text-gray-800">
+            {mentor.meetingCharge}/hr
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-400 uppercase">Availability</p>
+          <p className="text-sm font-medium text-gray-800">
+            {mentor.availability}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-400 uppercase">Languages</p>
+          <p className="text-sm font-medium text-gray-800">
+            {mentor.language.join(", ")}
+          </p>
+        </div>
+
+        <button
+          onClick={handleNavigate}
+          className="w-full mt-4 bg-primary hover:bg-secondary text-white py-3 rounded-lg text-sm font-medium transition"
+        >
+          Edit Profile
+        </button>
+      </div>
+
     </div>
+  </div>
+</div>
   );
 }

@@ -66,66 +66,119 @@ export default function MentorProfile() {
   }
 
   return (
-    <div className=" min-h-screen bg-white flex flex-col px-8 py-12">
-      <div className="bg-white w-full p-12 border-t border-b border-gray-300">
-        {/* Profile Header */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          <img
-            src={"https://i.ibb.co/RpYtQM5Y/logo.png"}
-            alt={mentor.name}
-            className="w-32 h-32 rounded-full border-4 border-primary object-cover"
-          />
-          <div className="text-center sm:text-left">
-            <h1 className="text-3xl font-bold text-gray-800">{mentor.name}</h1>
-            <p className="text-gray-500">{mentor.country}</p>
-            <p className="text-secondary font-medium">{mentor.currentJob}</p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50 py-14 px-6 flex justify-center">
+  <div className="max-w-6xl w-full grid md:grid-cols-3 gap-10">
 
-        {/* Bio */}
-        <p className="mt-6 text-gray-700 leading-relaxed">{mentor.bio}</p>
-
-        {/* Details */}
-        <div className="mt-6 space-y-2 text-gray-700">
-          <p>
-            <strong>Education:</strong> {mentor.highestEducation}
+    {/* LEFT SECTION — MAIN PROFILE */}
+    <div className="md:col-span-2 bg-white border border-gray-200 rounded-2xl p-10 shadow-sm">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        <img
+          src="https://i.ibb.co/RpYtQM5Y/logo.png"
+          alt={mentor.name}
+          className="w-28 h-28 rounded-full object-cover border border-gray-200"
+        />
+        <div className="text-center sm:text-left">
+          <h1 className="text-3xl font-semibold text-gray-900">
+            {mentor.name}
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            {mentor.country}
           </p>
-          <p>
-            <strong>Experience:</strong> {mentor.workExperience} years
+          <p className="text-primary font-medium mt-2">
+            {mentor.currentJob}
           </p>
-          <p>
-            <strong>Rate:</strong> {mentor.meetingCharge}/hr
-          </p>
-          <p>
-            <strong>Availability:</strong> {mentor.availability}___
-          </p>
-          <p>
-            <strong>Languages:</strong> {mentor.language.join(", ")}
-          </p>
-        </div>
-
-        {/* Skills */}
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Skills</h2>
-          <div className="flex flex-wrap gap-2">
-            {mentor.skills.map((skill, i) => (
-              <span
-                key={i}
-                className="px-3 py-1 bg-purple-100 text-primary text-sm rounded-full"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="mt-12 flex justify-center">
-          <button onClick={bookSession} className="cursor-pointer bg-primary hover:bg-secondary text-white py-4.5 px-16 rounded-md font-medium text-sm transition-all duration-200" >
-            {booked ? <span>Meeting booked</span> : <span>Book Meeting</span>}
-          </button>
         </div>
       </div>
+
+      {/* Bio */}
+      <div className="mt-10">
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">
+          About
+        </h2>
+        <p className="text-gray-600 text-sm leading-relaxed">
+          {mentor.bio}
+        </p>
+      </div>
+
+      {/* Details Grid */}
+      <div className="mt-10 grid sm:grid-cols-2 gap-6 text-sm">
+        <div>
+          <p className="text-gray-400 uppercase text-xs">Education</p>
+          <p className="font-medium text-gray-800">
+            {mentor.highestEducation}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-gray-400 uppercase text-xs">Experience</p>
+          <p className="font-medium text-gray-800">
+            {mentor.workExperience} years
+          </p>
+        </div>
+
+        <div>
+          <p className="text-gray-400 uppercase text-xs">Languages</p>
+          <p className="font-medium text-gray-800">
+            {mentor.language.join(", ")}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-gray-400 uppercase text-xs">Availability</p>
+          <p className="font-medium text-gray-800">
+            {mentor.availability}
+          </p>
+        </div>
+      </div>
+
+      {/* Skills */}
+      <div className="mt-10">
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">
+          Skills
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {mentor.skills.map((skill, i) => (
+            <span
+              key={i}
+              className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+
     </div>
+
+    {/* RIGHT SECTION — BOOKING CARD */}
+    <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm h-fit sticky top-24">
+      
+      <div className="text-center">
+        <p className="text-sm text-gray-500">Session Rate</p>
+        <h2 className="text-3xl font-semibold text-gray-900 mt-2">
+          ₹{mentor.meetingCharge}
+          <span className="text-base font-normal text-gray-500 ml-1">
+            / hour
+          </span>
+        </h2>
+      </div>
+
+      <button
+        onClick={bookSession}
+        className="w-full mt-8 bg-primary hover:bg-secondary text-white py-3 rounded-xl font-medium text-sm transition duration-200"
+      >
+        {booked ? "Meeting Booked" : "Book Session"}
+      </button>
+
+      <p className="text-xs text-gray-400 text-center mt-4">
+        Secure payment • Instant confirmation
+      </p>
+
+    </div>
+
+  </div>
+</div>
   );
 }

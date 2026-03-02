@@ -7,42 +7,55 @@ export default function MentorCard({mentor}) {
     const {_id,name, highestEducation, meetingCharge}=mentor;
     // console.log(mentors);
   return (
-    <Link to={`/mentor/profile/${_id}`}>
-<div className="bg-card border-border rounded-xl shadow-sm overflow-hidden transition-spring hover:shadow-lg hover:-translate-y-1 cursor-pointer">
-      {/* Image Section */}
-      <div className="aspect-square overflow-hidden">
-        <img
-          src="https://i.ibb.co/RpYtQM5Y/logo.png"
-          alt={`${name} profile`}
-          className="w-full h-full object-cover transition-transform hover:scale-105"
-        />
-      </div>
+   <Link to={`/mentor/profile/${_id}`}>
+  <div className="group bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition duration-300 hover:-translate-y-1 cursor-pointer">
+    
+    {/* Image */}
+    <div className="relative aspect-square overflow-hidden bg-gray-100">
+      <img
+        src="https://i.ibb.co/RpYtQM5Y/logo.png"
+        alt={`${name} profile`}
+        className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
+      />
+    </div>
+
+    {/* Content */}
+    <div className="p-5 space-y-4">
       
-      {/* Content Section */}
-      <div className="p-4 space-y-3">
-        {/* Name */}
-        <h3 className="font-semibold text-card-foreground text-lg leading-tight">
+      {/* Name */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 leading-tight">
           {name}
         </h3>
-        
-        {/* Education */}
-        <div className="flex items-center text-muted-foreground">
-          <GraduationCap className="w-4 h-4 mr-2 flex-shrink-0" />
+        <div className="flex items-center text-gray-500 mt-1">
+          <GraduationCap className="w-4 h-4 mr-2" />
           <span className="text-sm">{highestEducation}</span>
         </div>
-        
-        {/* Meeting Charge */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center text-muted-foreground">
-          &#8377;
-            <span className="text-sm">Meeting Rate</span>
-          </div>
-          <span variant="secondary" className="font-semibold">
-          &#8377;{meetingCharge}/hr
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-gray-100"></div>
+
+      {/* Pricing Section */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-gray-500">Session Rate</span>
+        <span className="text-base font-semibold text-gray-900">
+          ₹{meetingCharge}
+          <span className="text-xs font-normal text-gray-500 ml-1">
+            / hour
           </span>
+        </span>
+      </div>
+
+      {/* CTA */}
+      <div className="pt-2">
+        <div className="w-full text-center text-sm font-medium text-primary border border-gray-200 rounded-lg py-2 group-hover:bg-gray-50 transition">
+          View Profile
         </div>
       </div>
+
     </div>
-    </Link>
+  </div>
+</Link>
   )
 }
