@@ -28,6 +28,16 @@ const resumeSchema = new Schema({
     uploadedAt: Date,
 }, { _id: false });
 
+// Project
+const projectSchema = new Schema({
+    title: String,
+    description: String,
+    techStack: [String],
+    liveLink: String,
+    githubLink: String,
+}, { _id: false });
+
+
 // Job Application Tracker
 const applicationSchema = new Schema({
     jobId: {
@@ -84,6 +94,7 @@ const userSchema = new Schema({
 
     experience: [experienceSchema],
     education: [educationSchema],
+    projects: [projectSchema],
 
     /* ---------- Resume ---------- */
     resume: resumeSchema,

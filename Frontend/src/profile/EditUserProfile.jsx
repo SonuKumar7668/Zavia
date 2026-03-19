@@ -1,75 +1,82 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {useNavigate} from "react-router";
+import { useNavigate } from "react-router";
 
-export default function EditUserProfile() {
-  const [formData, setFormData] = useState({
-    name: "Aarav Sharma",
-    location: "Bhopal, India",
-    headline: "Aspiring Frontend Developer",
-    summary:
-      "Final year Computer Science student passionate about building scalable web applications.",
-    preferredRoles: "Frontend Developer, React Developer",
-    preferredLocation: "Remote, Bangalore",
-    skills: [{ name: "JavaScript", level: "intermediate" },
-    { name: "React", level: "beginner" },
-    { name: "Node.js", level: "beginner" }
-    ],
-    experience: [
-      {
-        role: "Frontend Intern",
-        company: "TechNova Solutions",
-        duration: "Jan 2025 – June 2025",
-        description:
-          "Built reusable UI components and improved performance by 20%."
-      }
-    ],
-    resume: null,
-    profileImage: null
-  });
+const EditProfile = () => {
   const navigate = useNavigate();
-  const [newSkill, setNewSkill] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [newSkillLevel, setNewSkillLevel] = useState("intermediate");
+  const [formData, setFormData] = useState(null);
+  useEffect(() => {
+    // Fetch user profile data from backend
+    const fetchProfile = async () => {
+      try {
+        console.log("Fetching profile...");
+        const token = localStorage.getItem("token");
+        const backendUrl = import.meta.env.VITE_BACKEND_API;
+        const res = await axios.get(`${backendUrl}/user/profile`, {
+          headers: { Authorization: token },
+        });
+        setFormData(res.data.user);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSkillAdd = () => {
-    if (newSkill.trim() !== "") {
-      setFormData({
-        ...formData,
-        skills: [
-          ...formData.skills,
-          { name: newSkill, level: newSkillLevel }
-        ]
-      });
-      setNewSkill("");
-      setNewSkillLevel("intermediate");
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      }
     }
+    fetchProfile();
+  }, []);
+
+  console.log("formData", formData);
+
+  // Handle simple fields
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSkillRemove = (index) => {
+  // Handle nested fields (jobPreferences)
+  const handlePreferenceChange = (field, value) => {
+    setFormData({
+      ...formData,
+      jobPreferences: {
+        ...formData.jobPreferences,
+        [field]: value.split(","),
+      },
+    });
+  };
+
+  // Skills
+  const addSkill = () => {
+    setFormData({
+      ...formData,
+      skills: [...formData.skills, { name: "", level: "intermediate" }],
+    });
+  };
+
+  const updateSkill = (index, key, value) => {
+    const updated = [...formData.skills];
+    updated[index][key] = value;
+    setFormData({ ...formData, skills: updated });
+  };
+
+  const removeSkill = (index) => {
     const updated = formData.skills.filter((_, i) => i !== index);
     setFormData({ ...formData, skills: updated });
   };
 
-  const handleExperienceChange = (index, field, value) => {
-    const updated = [...formData.experience];
-    updated[index][field] = value;
-    setFormData({ ...formData, experience: updated });
-  };
-
+  // Experience
   const addExperience = () => {
     setFormData({
       ...formData,
       experience: [
         ...formData.experience,
-        { role: "", company: "", duration: "", description: "" }
-      ]
+        { title: "", company: "", description: "" },
+      ],
     });
+  };
+
+  const updateExperience = (index, key, value) => {
+    const updated = [...formData.experience];
+    updated[index][key] = value;
+    setFormData({ ...formData, experience: updated });
   };
 
   const removeExperience = (index) => {
@@ -77,91 +84,100 @@ export default function EditUserProfile() {
     setFormData({ ...formData, experience: updated });
   };
 
-  /* ===============================
-     SUBMIT WITH AXIOS
-  =============================== */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  // Education
+  const addEducation = () => {
+    setFormData({
+      ...formData,
+      education: [
+        ...formData.education,
+        { degree: "", institute: "", year: "", grade: "" },
+      ],
+    });
+  };
 
+  const updateEducation = (index, key, value) => {
+    const updated = [...formData.education];
+    updated[index][key] = value;
+    setFormData({ ...formData, education: updated });
+  };
+
+  const removeEducation = (index) => {
+    const updated = formData.education.filter((_, i) => i !== index);
+    setFormData({ ...formData, education: updated });
+  };
+
+  // Projects
+  const addProject = () => {
+    setFormData({
+      ...formData,
+      projects: [
+        ...formData.projects,
+        { title: "", description: "", techStack: [] },
+      ],
+    });
+  };
+
+  const updateProject = (index, key, value) => {
+    const updated = [...formData.projects];
+    updated[index][key] =
+      key === "techStack" ? value.split(",") : value;
+    setFormData({ ...formData, projects: updated });
+  };
+
+  const removeProject = (index) => {
+    const updated = formData.projects.filter((_, i) => i !== index);
+    setFormData({ ...formData, projects: updated });
+  };
+
+  const updateProfile = async (data) => {
     try {
-      const data = new FormData();
-
-      // Append text fields
-      data.append("name", formData.name);
-      data.append("headline", formData.headline);
-      data.append("location", formData.location);
-      data.append("bio", formData.summary);
-      data.append("preferredRoles", formData.preferredRoles);
-      data.append("preferredLocation", formData.preferredLocation);
-
-      // Append JSON fields
-      data.append("skills", JSON.stringify(formData.skills));
-      data.append("experience", JSON.stringify(formData.experience));
-
-      // Append files if exist
-      if (formData.profileImage) {
-        data.append("profileImage", formData.profileImage);
-      }
-
-      if (formData.resume) {
-        data.append("resume", formData.resume);
-      }
-
+      const token = localStorage.getItem("token");
       const backendUrl = import.meta.env.VITE_BACKEND_API;
-      const response = await axios.put(
-        `${backendUrl}/user/update-profile`,
+      const res = await axios.put(
+        `${backendUrl}/user/profile`,
         data,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `${localStorage.getItem("token")}`
-          }
+            Authorization: token,
+          },
         }
       );
-
-      console.log(response.data);
-      navigate("/user/profile");
-
-    } catch (err) {
-      console.error(err);
-      setError("Profile update failed");
-    } finally {
-      setLoading(false);
+      if (res.data.success) {
+        alert("Profile updated successfully!");
+        navigate("/user/profile");
+      }
+    } catch (error) {
+      console.log("Error updating profile:", error);
     }
+  }
+
+  // Submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    updateProfile(formData);
+    // onSave(formData);
   };
 
+  if (!formData) {
+    return <div className="flex items-center justify-center h-screen">
+      <p className="text-gray-500 text-lg">Loading profile...</p>
+    </div>
+  }
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-6 flex justify-center">
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-4xl w-full bg-white border border-gray-200 rounded-2xl shadow-sm p-10 space-y-10"
-      >
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Edit Profile
-        </h1>
+    <div className="max-w-5xl mx-auto p-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
 
-        {/* Basic Info */}
-        <section className="space-y-5">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Basic Information
-          </h2>
+        {/* BASIC INFO */}
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Basic Info</h2>
 
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
-          />
-
-          <input
-            type="text"
-            name="headline"
-            value={formData.headline}
-            onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
+            placeholder="Name"
+            className="input"
           />
 
           <input
@@ -169,107 +185,244 @@ export default function EditUserProfile() {
             name="location"
             value={formData.location}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
+            placeholder="Location"
+            className="input mt-3"
           />
-        </section>
+        </div>
 
-        {/* Skills */}
-        <section className="space-y-5">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Skills
-          </h2>
+        {/* CAREER SUMMARY */}
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Career Summary</h2>
 
-          <div className="flex gap-3">
-            <input
-              type="text"
-              value={newSkill}
-              onChange={(e) => setNewSkill(e.target.value)}
-              placeholder="Skill name"
-              className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm"
-            />
+          <textarea
+            name="careerSummary"
+            value={formData.bio}
+            onChange={handleChange}
+            className="input h-24"
+          />
+        </div>
 
-            <select
-              value={newSkillLevel}
-              onChange={(e) => setNewSkillLevel(e.target.value)}
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
-            >
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-            </select>
+        {/* PREFERENCES */}
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Preferences</h2>
 
-            <button
-              type="button"
-              onClick={handleSkillAdd}
-              className="bg-primary text-white px-4 rounded-lg text-sm"
-            >
-              Add
-            </button>
-          </div>
+          <input
+            type="text"
+            value={formData.jobPreferences?.roles?.join(",")}
+            onChange={(e) =>
+              handlePreferenceChange("roles", e.target.value)
+            }
+            placeholder="Roles (comma separated)"
+            className="input"
+          />
 
-          <div className="flex flex-wrap gap-2">
-            {formData.skills.map((skill, i) => (
-              <span
-                key={i}
-                className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full flex items-center gap-2"
+          <input
+            type="text"
+            value={formData.jobPreferences?.locations?.join(",")}
+            onChange={(e) =>
+              handlePreferenceChange("locations", e.target.value)
+            }
+            placeholder="Locations"
+            className="input mt-3"
+          />
+        </div>
+
+        {/* SKILLS */}
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Skills</h2>
+
+          {formData.skills.map((skill, index) => (
+            <div key={index} className="flex gap-2 mb-2">
+              <input
+                value={skill.name}
+                onChange={(e) =>
+                  updateSkill(index, "name", e.target.value)
+                }
+                placeholder="Skill"
+                className="input"
+              />
+
+              <select
+                value={skill.level}
+                onChange={(e) =>
+                  updateSkill(index, "level", e.target.value)
+                }
+                className="input"
               >
-                {skill.name} • {skill.level}
-                <button
-                  type="button"
-                  onClick={() => handleSkillRemove(i)}
-                  className="text-red-500 text-xs"
-                >
-                  ✕
-                </button>
-              </span>
-            ))}
-          </div>
-        </section>
+                <option>beginner</option>
+                <option>intermediate</option>
+                <option>advanced</option>
+              </select>
 
-        {/* Resume */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Resume
-          </h2>
+              <button type="button" onClick={() => removeSkill(index)}>
+                ❌
+              </button>
+            </div>
+          ))}
 
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={(e) =>
-              setFormData({ ...formData, resume: e.target.files[0] })
-            }
-          />
-        </section>
-
-        {/* Profile Image */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Profile Image
-          </h2>
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) =>
-              setFormData({ ...formData, profileImage: e.target.files[0] })
-            }
-          />
-        </section>
-
-        {error && (
-          <p className="text-red-500 text-sm">{error}</p>
-        )}
-
-        <div className="flex justify-end pt-6">
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-primary text-white px-6 py-2 rounded-lg text-sm"
-          >
-            {loading ? "Saving..." : "Save Changes"}
+          <button type="button" onClick={addSkill}>
+            + Add Skill
           </button>
         </div>
+
+        {/* EXPERIENCE */}
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Experience</h2>
+
+          {formData.experience.map((exp, index) => (
+            <div key={index} className="mb-3">
+              <input
+                placeholder="Title"
+                value={exp.role}
+                onChange={(e) =>
+                  updateExperience(index, "title", e.target.value)
+                }
+                className="input"
+              />
+              <input
+                placeholder="Company"
+                value={exp.company}
+                onChange={(e) =>
+                  updateExperience(index, "company", e.target.value)
+                }
+                className="input mt-2"
+              />
+              <textarea
+                placeholder="Description"
+                value={exp.description}
+                onChange={(e) =>
+                  updateExperience(index, "description", e.target.value)
+                }
+                className="input mt-2"
+              />
+              <button onClick={() => removeExperience(index)}>
+                Remove
+              </button>
+            </div>
+          ))}
+
+          <button type="button" onClick={addExperience}>
+            + Add Experience
+          </button>
+        </div>
+
+        {/* EDUCATION */}
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Education</h2>
+
+          {formData.education.map((edu, index) => (
+            <div key={index} className="mb-4">
+
+              <input
+                placeholder="Degree (e.g. B.Tech CSE)"
+                value={edu.degree}
+                onChange={(e) =>
+                  updateEducation(index, "degree", e.target.value)
+                }
+                className="input"
+              />
+
+              <input
+                placeholder="Institute"
+                value={edu.institute}
+                onChange={(e) =>
+                  updateEducation(index, "institute", e.target.value)
+                }
+                className="input mt-2"
+              />
+
+              <input
+                placeholder="Year (e.g. 2026)"
+                value={edu.year}
+                onChange={(e) =>
+                  updateEducation(index, "year", e.target.value)
+                }
+                className="input mt-2"
+              />
+
+              <input
+                placeholder="Grade / CGPA (e.g. 8.5 CGPA)"
+                value={edu.grade}
+                onChange={(e) =>
+                  updateEducation(index, "grade", e.target.value)
+                }
+                className="input mt-2"
+              />
+
+              <button
+                type="button"
+                onClick={() => removeEducation(index)}
+                className="text-red-500 text-sm mt-2"
+              >
+                Remove
+              </button>
+
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={addEducation}
+            className="text-blue-600 text-sm"
+          >
+            + Add Education
+          </button>
+        </div>
+
+        {/* PROJECTS */}
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Projects</h2>
+
+          {formData.projects.map((proj, index) => (
+            <div key={index} className="mb-3">
+              <input
+                placeholder="Title"
+                value={proj.title}
+                onChange={(e) =>
+                  updateProject(index, "title", e.target.value)
+                }
+                className="input"
+              />
+
+              <textarea
+                placeholder="Description"
+                value={proj.description}
+                onChange={(e) =>
+                  updateProject(index, "description", e.target.value)
+                }
+                className="input mt-2"
+              />
+
+              <input
+                placeholder="Tech Stack (comma separated)"
+                value={proj.techStack.join(",")}
+                onChange={(e) =>
+                  updateProject(index, "techStack", e.target.value)
+                }
+                className="input mt-2"
+              />
+
+              <button onClick={() => removeProject(index)}>
+                Remove
+              </button>
+            </div>
+          ))}
+
+          <button type="button" onClick={addProject}>
+            + Add Project
+          </button>
+        </div>
+
+        {/* SAVE BUTTON */}
+        <button
+          type="submit"
+          className="bg-black text-white px-6 py-2 rounded-lg"
+        >
+          Save Changes
+        </button>
+
       </form>
     </div>
   );
-}
+};
+export default EditProfile;

@@ -15,6 +15,84 @@ const cloudinary = require("../config/cloudinary");
 const {pdfParse} = require("pdf-parse");
 const verifyToken = require("../middlewares/verifyToken");
 
+router.get("/profile",verifyToken,async (req,res)=>{
+    let userId = req.user.id;
+    let user = await userModel.findById(userId).select("-password");
+    if(!user){
+        return res.status(404).json({msg:"User not found"});
+    }
+    res.status(200).json({user});
+});
+
+router.put("/profile",verifyToken,async (req,res)=>{
+try {
+    const userId = req.user.id; // from JWT middleware
+    console.log("user data",req.body);
+    // Extract only allowed fields
+    const allowedUpdates = {
+      name: req.body.name,
+      location: req.body.location,
+      careerSummary: req.body.careerSummary,
+      jobPreferences: req.body.jobPreferences,
+      skills: req.body.skills,
+      experience: req.body.experience,
+      education: req.body.education,
+      projects: req.body.projects,
+      socialLinks: req.body.socialLinks,
+      openToWork: req.body.openToWork,
+    };
+
+    // Remove undefined fields (IMPORTANT)
+    Object.keys(allowedUpdates).forEach(
+      (key) => allowedUpdates[key] === undefined && delete allowedUpdates[key]
+    );
+
+    // Update user
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { $set: allowedUpdates },
+      { new: true, runValidators: true }
+    );
+
+    // Optional: recalculate profile completion
+    const completionFields = [
+      "name",
+      "location",
+      "bio",
+      "skills",
+      "experience",
+      "education",
+      "projects",
+    ];
+
+    const filled = completionFields.filter(
+      (field) =>
+        updatedUser[field] &&
+        (Array.isArray(updatedUser[field])
+          ? updatedUser[field].length > 0
+          : true)
+    ).length;
+
+    updatedUser.profileCompletion = Math.round(
+      (filled / completionFields.length) * 100
+    );
+
+    await updatedUser.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+})
+
 // Register User
 router.post("/register", async (req, res) => {
     let { name, email, password } = req.body;
@@ -74,126 +152,7 @@ router.put("/forgotpassword",async (req,res)=>{
     const hashedPassword = await bcrypt.hash(password,salt);
     user.password = hashedPassword;
     await user.save();
-    res.status(201).json("password changed");
+    res.status(201).json({ message: "Password changed successfully" });
 })
-
-router.put(
-  "/update-profile",
-  verifyToken,
-  upload.fields([
-    { name: "profileImage", maxCount: 1 },
-    { name: "resume", maxCount: 1 }
-  ]),
-  async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const user = await userModel.findById(userId);
-
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      /* ===========================
-         1️⃣ Handle Profile Image
-      =========================== */
-      if (req.files?.profileImage) {
-        const imageFile = req.files.profileImage[0];
-
-        const uploadedImage = await cloudinary.uploader.upload_stream(
-          {
-            folder: "zavia/profile-images",
-            resource_type: "image",
-          },
-          async (error, result) => {
-            if (error) throw error;
-            user.profileImage = result.secure_url;
-            await user.save();
-          }
-        );
-
-        uploadedImage.end(imageFile.buffer);
-      }
-
-      /* ===========================
-         2️⃣ Handle Resume PDF
-      =========================== */
-      if (req.files?.resume) {
-        const resumeFile = req.files.resume[0];
-
-        // Upload PDF to Cloudinary
-        const uploadedResume = await new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            {
-              folder: "zavia/resumes",
-              resource_type: "raw", // important for PDFs
-            },
-            (error, result) => {
-              if (error) reject(error);
-              else resolve(result);
-            }
-          );
-          stream.end(resumeFile.buffer);
-        });
-
-        // Extract text from PDF
-        const parsed = await pdfParse(resumeFile.buffer);
-
-        user.resume = {
-          url: uploadedResume.secure_url,
-          extractedText: parsed.text,
-          uploadedAt: new Date(),
-        };
-      }
-
-      /* ===========================
-         3️⃣ Update Text Fields
-      =========================== */
-
-      const {
-        headline,
-        location,
-        bio,
-        skills,
-        experience,
-        education,
-        jobPreferences
-      } = req.body;
-
-      if (headline) user.headline = headline;
-      if (location) user.location = location;
-      if (bio) user.bio = bio;
-
-      if (skills) {
-        user.skills = JSON.parse(skills);
-      }
-
-      if (experience) {
-        user.experience = JSON.parse(experience);
-      }
-
-      if (education) {
-        user.education = JSON.parse(education);
-      }
-
-      if (jobPreferences) {
-        user.jobPreferences = JSON.parse(jobPreferences);
-      }
-
-      await user.save();
-
-      return res.status(200).json({
-        message: "Profile updated successfully",
-        user,
-      });
-
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        message: "Profile update failed",
-        error: error.message,
-      });
-    }
-  }
-);
 
 module.exports = router;
