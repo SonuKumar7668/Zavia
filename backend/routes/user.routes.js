@@ -9,6 +9,11 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const varifyToken = require("../middlewares/verifyToken");
 const asyncWrap = require("../middlewares/asyncWrap");
 const salt = 10;
+const multer = require("multer");
+const upload = multer();
+const cloudinary = require("../config/cloudinary");
+const {pdfParse} = require("pdf-parse");
+const verifyToken = require("../middlewares/verifyToken");
 
 // Register User
 router.post("/register", async (req, res) => {
@@ -71,5 +76,124 @@ router.put("/forgotpassword",async (req,res)=>{
     await user.save();
     res.status(201).json("password changed");
 })
+
+router.put(
+  "/update-profile",
+  verifyToken,
+  upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "resume", maxCount: 1 }
+  ]),
+  async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await userModel.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      /* ===========================
+         1️⃣ Handle Profile Image
+      =========================== */
+      if (req.files?.profileImage) {
+        const imageFile = req.files.profileImage[0];
+
+        const uploadedImage = await cloudinary.uploader.upload_stream(
+          {
+            folder: "zavia/profile-images",
+            resource_type: "image",
+          },
+          async (error, result) => {
+            if (error) throw error;
+            user.profileImage = result.secure_url;
+            await user.save();
+          }
+        );
+
+        uploadedImage.end(imageFile.buffer);
+      }
+
+      /* ===========================
+         2️⃣ Handle Resume PDF
+      =========================== */
+      if (req.files?.resume) {
+        const resumeFile = req.files.resume[0];
+
+        // Upload PDF to Cloudinary
+        const uploadedResume = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "zavia/resumes",
+              resource_type: "raw", // important for PDFs
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(resumeFile.buffer);
+        });
+
+        // Extract text from PDF
+        const parsed = await pdfParse(resumeFile.buffer);
+
+        user.resume = {
+          url: uploadedResume.secure_url,
+          extractedText: parsed.text,
+          uploadedAt: new Date(),
+        };
+      }
+
+      /* ===========================
+         3️⃣ Update Text Fields
+      =========================== */
+
+      const {
+        headline,
+        location,
+        bio,
+        skills,
+        experience,
+        education,
+        jobPreferences
+      } = req.body;
+
+      if (headline) user.headline = headline;
+      if (location) user.location = location;
+      if (bio) user.bio = bio;
+
+      if (skills) {
+        user.skills = JSON.parse(skills);
+      }
+
+      if (experience) {
+        user.experience = JSON.parse(experience);
+      }
+
+      if (education) {
+        user.education = JSON.parse(education);
+      }
+
+      if (jobPreferences) {
+        user.jobPreferences = JSON.parse(jobPreferences);
+      }
+
+      await user.save();
+
+      return res.status(200).json({
+        message: "Profile updated successfully",
+        user,
+      });
+
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        message: "Profile update failed",
+        error: error.message,
+      });
+    }
+  }
+);
 
 module.exports = router;

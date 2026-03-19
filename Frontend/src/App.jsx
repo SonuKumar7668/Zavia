@@ -17,6 +17,7 @@ import FeedbackForm from "./Forms/FeedBackForm";
 import Chatbot from "./Chat/ChatBot";
 import UserProfile from "./profile/UserProfile";
 import EditUserProfile from "./profile/EditUserProfile";
+import NotFoundPage from "./NotFound";
 
 function App() {
   const location = useLocation();
@@ -28,13 +29,14 @@ function App() {
       {!HideHeader && <Header />}
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/mentor/profile/:id" element={<MentorProfile />} />
-        <Route path="/form" element={<MentorForm />} />
-        <Route path="/mentor/profile/edit/:id" element={<EditDashboard />} />
-        <Route path="/explore" element={<Explore />} />
-        <Route path="/dashboard/:id" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgotPassword" element={<ForgotPassword/>} />
+        <Route path="/explore" element={<Explore />} />
+        <Route path="/mentor/profile/:id" element={<MentorProfile />} />
+        <Route path="/mentor/profile/edit/:id" element={<EditDashboard />} />
+        <Route path="/form" element={<MentorForm />} />
+        <Route path="/dashboard/:id" element={<Dashboard />} />
         <Route path="/user/profile" element={<UserProfile />} />
         <Route path="/user/profile/edit" element={<EditUserProfile />} />
         <Route path="/videocall/:id" element={
@@ -43,9 +45,8 @@ function App() {
           </SocketProvider>
         } />
         <Route path="/session/:id/feedback" element={<FeedbackForm/>}/>
-        <Route path="/forgotPassword" element={<ForgotPassword/>} />
         <Route path="/chat" element={<Chatbot/>} />
-        <Route path="*" element={<h1>Page Not Found</h1>} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       {!HideHeader && <Footer />}
     </>

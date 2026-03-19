@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
+import {useNavigate} from "react-router";
 
 export default function EditUserProfile() {
   const [formData, setFormData] = useState({
@@ -9,11 +11,9 @@ export default function EditUserProfile() {
       "Final year Computer Science student passionate about building scalable web applications.",
     preferredRoles: "Frontend Developer, React Developer",
     preferredLocation: "Remote, Bangalore",
-    skills: [
-      "React.js",
-      "Node.js",
-      "MongoDB",
-      "Tailwind CSS"
+    skills: [{ name: "JavaScript", level: "intermediate" },
+    { name: "React", level: "beginner" },
+    { name: "Node.js", level: "beginner" }
     ],
     experience: [
       {
@@ -24,10 +24,14 @@ export default function EditUserProfile() {
           "Built reusable UI components and improved performance by 20%."
       }
     ],
-    resume: null
+    resume: null,
+    profileImage: null
   });
-
+  const navigate = useNavigate();
   const [newSkill, setNewSkill] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [newSkillLevel, setNewSkillLevel] = useState("intermediate");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,9 +41,13 @@ export default function EditUserProfile() {
     if (newSkill.trim() !== "") {
       setFormData({
         ...formData,
-        skills: [...formData.skills, newSkill]
+        skills: [
+          ...formData.skills,
+          { name: newSkill, level: newSkillLevel }
+        ]
       });
       setNewSkill("");
+      setNewSkillLevel("intermediate");
     }
   };
 
@@ -69,9 +77,59 @@ export default function EditUserProfile() {
     setFormData({ ...formData, experience: updated });
   };
 
-  const handleSubmit = (e) => {
+  /* ===============================
+     SUBMIT WITH AXIOS
+  =============================== */
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = new FormData();
+
+      // Append text fields
+      data.append("name", formData.name);
+      data.append("headline", formData.headline);
+      data.append("location", formData.location);
+      data.append("bio", formData.summary);
+      data.append("preferredRoles", formData.preferredRoles);
+      data.append("preferredLocation", formData.preferredLocation);
+
+      // Append JSON fields
+      data.append("skills", JSON.stringify(formData.skills));
+      data.append("experience", JSON.stringify(formData.experience));
+
+      // Append files if exist
+      if (formData.profileImage) {
+        data.append("profileImage", formData.profileImage);
+      }
+
+      if (formData.resume) {
+        data.append("resume", formData.resume);
+      }
+
+      const backendUrl = import.meta.env.VITE_BACKEND_API;
+      const response = await axios.put(
+        `${backendUrl}/user/update-profile`,
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `${localStorage.getItem("token")}`
+          }
+        }
+      );
+
+      console.log(response.data);
+      navigate("/user/profile");
+
+    } catch (err) {
+      console.error(err);
+      setError("Profile update failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -95,7 +153,6 @@ export default function EditUserProfile() {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="Full Name"
             className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
           />
 
@@ -104,7 +161,6 @@ export default function EditUserProfile() {
             name="headline"
             value={formData.headline}
             onChange={handleChange}
-            placeholder="Professional Headline"
             className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
           />
 
@@ -113,40 +169,6 @@ export default function EditUserProfile() {
             name="location"
             value={formData.location}
             onChange={handleChange}
-            placeholder="Location"
-            className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
-          />
-        </section>
-
-        {/* Career Summary */}
-        <section className="space-y-5">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Career Summary
-          </h2>
-
-          <textarea
-            name="summary"
-            value={formData.summary}
-            onChange={handleChange}
-            rows="4"
-            className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
-          />
-
-          <input
-            type="text"
-            name="preferredRoles"
-            value={formData.preferredRoles}
-            onChange={handleChange}
-            placeholder="Preferred Roles"
-            className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
-          />
-
-          <input
-            type="text"
-            name="preferredLocation"
-            value={formData.preferredLocation}
-            onChange={handleChange}
-            placeholder="Preferred Location"
             className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
           />
         </section>
@@ -162,9 +184,20 @@ export default function EditUserProfile() {
               type="text"
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
-              placeholder="Add Skill"
+              placeholder="Skill name"
               className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm"
             />
+
+            <select
+              value={newSkillLevel}
+              onChange={(e) => setNewSkillLevel(e.target.value)}
+              className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            >
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+
             <button
               type="button"
               onClick={handleSkillAdd}
@@ -180,7 +213,7 @@ export default function EditUserProfile() {
                 key={i}
                 className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full flex items-center gap-2"
               >
-                {skill}
+                {skill.name} • {skill.level}
                 <button
                   type="button"
                   onClick={() => handleSkillRemove(i)}
@@ -193,74 +226,7 @@ export default function EditUserProfile() {
           </div>
         </section>
 
-        {/* Experience */}
-        <section className="space-y-5">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Experience
-          </h2>
-
-          {formData.experience.map((exp, index) => (
-            <div
-              key={index}
-              className="border border-gray-200 rounded-xl p-5 space-y-3"
-            >
-              <input
-                type="text"
-                placeholder="Role"
-                value={exp.role}
-                onChange={(e) =>
-                  handleExperienceChange(index, "role", e.target.value)
-                }
-                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
-              />
-              <input
-                type="text"
-                placeholder="Company"
-                value={exp.company}
-                onChange={(e) =>
-                  handleExperienceChange(index, "company", e.target.value)
-                }
-                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
-              />
-              <input
-                type="text"
-                placeholder="Duration"
-                value={exp.duration}
-                onChange={(e) =>
-                  handleExperienceChange(index, "duration", e.target.value)
-                }
-                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
-              />
-              <textarea
-                placeholder="Description"
-                value={exp.description}
-                onChange={(e) =>
-                  handleExperienceChange(index, "description", e.target.value)
-                }
-                rows="3"
-                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm"
-              />
-
-              <button
-                type="button"
-                onClick={() => removeExperience(index)}
-                className="text-red-500 text-sm"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={addExperience}
-            className="text-primary text-sm font-medium"
-          >
-            + Add Experience
-          </button>
-        </section>
-
-        {/* Resume Upload */}
+        {/* Resume */}
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-800">
             Resume
@@ -272,24 +238,35 @@ export default function EditUserProfile() {
             onChange={(e) =>
               setFormData({ ...formData, resume: e.target.files[0] })
             }
-            className="text-sm"
           />
         </section>
 
-        {/* Submit */}
-        <div className="flex justify-end gap-4 pt-6">
-          <button
-            type="button"
-            className="border border-gray-200 px-5 py-2 rounded-lg text-sm"
-          >
-            Cancel
-          </button>
+        {/* Profile Image */}
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-800">
+            Profile Image
+          </h2>
 
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setFormData({ ...formData, profileImage: e.target.files[0] })
+            }
+          />
+        </section>
+
+        {error && (
+          <p className="text-red-500 text-sm">{error}</p>
+        )}
+
+        <div className="flex justify-end pt-6">
           <button
             type="submit"
+            disabled={loading}
             className="bg-primary text-white px-6 py-2 rounded-lg text-sm"
           >
-            Save Changes
+            {loading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>

@@ -1,20 +1,119 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
+/* ========================
+   Sub Schemas
+======================== */
 
-//Mentee	Id	Language	Profile Img	Name	Email	Password	Skills	Bio	role
+// Experience
+const experienceSchema = new Schema({
+    role: String,
+    company: String,
+    duration: String,
+    description: String,
+}, { _id: false });
 
-const userScheam = new Schema({
-    name:String,
-    email:String,
-    password:String,
-    role:{
-        type:String,
-        enum:['mentor','mentee','admin'],
-        default:'mentee'
+// Education
+const educationSchema = new Schema({
+    degree: String,
+    institute: String,
+    year: String,
+    grade: String,
+}, { _id: false });
+
+// Resume
+const resumeSchema = new Schema({
+    url: String,              // S3 URL
+    extractedText: String,    // Parsed PDF text
+    uploadedAt: Date,
+}, { _id: false });
+
+// Job Application Tracker
+const applicationSchema = new Schema({
+    jobId: {
+        type: Schema.Types.ObjectId,
+        ref: "Job"
     },
-    skills:[String],
+    status: {
+        type: String,
+        enum: ["applied", "shortlisted", "interview", "offer", "rejected"],
+        default: "applied"
+    },
+    appliedAt: {
+        type: Date,
+        default: Date.now
+    }
+}, { _id: false });
+
+
+/* ========================
+   Main User Schema
+======================== */
+
+const userSchema = new Schema({
+
+    /* ---------- Authentication ---------- */
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    profileImage: String,
+
+    role: {
+        type: String,
+        enum: ["mentee", "mentor", "admin"],
+        default: "mentee"
+    },
+
+    isEmailVerified: {
+        type: Boolean,
+        default: false
+    },
+
+    /* ---------- Professional Identity (Job Seeker) ---------- */
+    headline: String,       // "Aspiring Frontend Developer"
+    location: String,
+    bio: String,
+
+    skills: [{
+        name: String,
+        level: {
+            type: String,
+            enum: ["beginner", "intermediate", "advanced"]
+        }
+    }],
+
+    experience: [experienceSchema],
+    education: [educationSchema],
+
+    /* ---------- Resume ---------- */
+    resume: resumeSchema,
+
+    /* ---------- Job Preferences ---------- */
+    jobPreferences: {
+        roles: [String],
+        locations: [String],
+        salaryRange: {
+            min: Number,
+            max: Number
+        },
+        remoteOnly: Boolean
+    },
+
+    /* ---------- Applications ---------- */
+    applications: [applicationSchema],
+
+    /* ---------- Platform Stats ---------- */
+    profileCompletion: {
+        type: Number,
+        default: 0
+    },
+
+    savedJobs: [{
+        type: Schema.Types.ObjectId,
+        ref: "Job"
+    }]
+
 }, { timestamps: true });
 
-const User = mongoose.model("User", userScheam);
+const User = mongoose.model("User", userSchema);
 module.exports = User;
