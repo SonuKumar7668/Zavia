@@ -18,6 +18,15 @@ import Chatbot from "./Chat/ChatBot";
 import UserProfile from "./profile/UserProfile";
 import EditUserProfile from "./profile/EditUserProfile";
 import NotFoundPage from "./NotFound";
+import AdminLayout from "./components/AdminLayout";
+import AdminDashboard from "./admin/AdminDashboard";
+import ManageJobs from "./admin/ManageJobs";
+import ManageUsers from "./admin/ManageUsers";
+import AdminRoute from "./components/AdminRoutes";
+import CreateJob from "./admin/CreateJob";
+import EditJob from "./admin/EditJob";
+import JobsExplore from "./job/JobExplore";
+import JobDetails from "./job/JobDetails";
 
 function App() {
   const location = useLocation();
@@ -31,7 +40,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/forgotPassword" element={<ForgotPassword/>} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/mentor/profile/:id" element={<MentorProfile />} />
         <Route path="/mentor/profile/edit/:id" element={<EditDashboard />} />
@@ -44,8 +53,21 @@ function App() {
             <VideoCall />
           </SocketProvider>
         } />
-        <Route path="/session/:id/feedback" element={<FeedbackForm/>}/>
-        <Route path="/chat" element={<Chatbot/>} />
+        <Route path="/session/:id/feedback" element={<FeedbackForm />} />
+        <Route path="/chat" element={<Chatbot />} />
+        <Route path="/jobs" element={<JobsExplore />} />
+        <Route path="/jobs/:id" element={<JobDetails />} />
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        }>
+          <Route index element={<AdminDashboard />} />
+          <Route path="jobs" element={<ManageJobs />} />
+          <Route path="users" element={<ManageUsers />} />
+          <Route path="jobs/create" element={<CreateJob />} />
+          <Route path="jobs/edit/:id" element={<EditJob />} />
+        </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       {!HideHeader && <Footer />}

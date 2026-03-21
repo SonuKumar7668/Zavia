@@ -1,106 +1,101 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
-
-const jobSchema = new Schema({
-
-  /* ---------- Basic Job Info ---------- */
-  title: {
-    type: String,
-    required: true,
-    trim: true
-  },
-
-  companyName: {
-    type: String,
-    required: true
-  },
-
-  companyLogo: String,
-
-  description: {
-    type: String,
-    required: true
-  },
-
-  /* ---------- Location ---------- */
-  location: {
-    country: String,
-    state: String,
-    city: String
-  },
-
-  workMode: {
-    type: String,
-    enum: ["remote", "onsite", "hybrid"],
-    default: "onsite"
-  },
-
-  /* ---------- Employment Details ---------- */
-  employmentType: {
-    type: String,
-    enum: ["full-time", "part-time", "internship", "contract"],
-    required: true
-  },
-
-  experienceLevel: {
-    type: String,
-    enum: ["fresher", "junior", "mid", "senior"],
-    required: true
-  },
-
-  /* ---------- Salary ---------- */
-  salaryRange: {
-    min: Number,
-    max: Number,
-    currency: {
+const jobSchema = new mongoose.Schema(
+  {
+    // Basic Info
+    title: {
       type: String,
-      default: "INR"
-    }
-  },
-
-  /* ---------- Skills Required ---------- */
-  skillsRequired: [{
-    name: String,
-    level: {
+      required: true,
+      trim: true,
+    },
+    company: {
       type: String,
-      enum: ["beginner", "intermediate", "advanced"]
-    }
-  }],
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
 
-  /* ---------- Application Tracking ---------- */
-  applications: [{
-    type: Schema.Types.ObjectId,
-    ref: "User"
-  }],
+    // Job Details
+    location: {
+      type: String,
+      required: true,
+    },
+    jobType: {
+      type: String,
+      enum: ["Full-time", "Part-time", "Internship", "Contract"],
+      default: "Full-time",
+    },
+    workMode: {
+      type: String,
+      enum: ["Remote", "On-site", "Hybrid"],
+      default: "On-site",
+    },
 
-  applicationCount: {
-    type: Number,
-    default: 0
+    // Salary
+    salary: {
+      type: Number,
+    },
+
+    // Skills & Requirements
+    skillsRequired: [
+      {
+        type: String,
+      },
+    ],
+    experienceRequired: {
+      type: String, // e.g. "0-2 years", "3+ years"
+    },
+    educationRequired: {
+      type: String,
+    },
+
+    // Application Handling
+    applicationDeadline: {
+      type: Date,
+    },
+    applicants: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        status: {
+          type: String,
+          enum: ["applied", "shortlisted", "rejected", "hired"],
+          default: "applied",
+        },
+        appliedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
+    // Posted By (Admin / Employer)
+    postedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // or "Admin" if separate model
+      required: true,
+    },
+
+    // Metadata
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    views: {
+      type: Number,
+      default: 0,
+    },
+
+    // Optional Enhancements
+    perks: [String],
+    companyLogo: String,
+    applyLink: String, // external apply option
   },
+  { timestamps: true }
+);
 
-  /* ---------- Recruiter / Admin ---------- */
-  postedBy: {
-    type: Schema.Types.ObjectId,
-    ref: "User" // recruiter or admin
-  },
-
-  /* ---------- Status ---------- */
-  status: {
-    type: String,
-    enum: ["open", "closed", "draft"],
-    default: "open"
-  },
-
-  expiresAt: Date
-
-}, { timestamps: true });
-
-/* ---------- Indexing (Important for Search Performance) ---------- */
-jobSchema.index({ title: "text", description: "text", companyName: "text" });
-jobSchema.index({ skillsRequired: 1 });
-jobSchema.index({ location: 1 });
-jobSchema.index({ experienceLevel: 1 });
-jobSchema.index({ employmentType: 1 });
-
-const Job = mongoose.model("Job", jobSchema);
-module.exports = Job;
+module.exports = mongoose.model("Job", jobSchema);

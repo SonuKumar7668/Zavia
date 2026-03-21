@@ -117,11 +117,7 @@ const UserProfile = () => {
           <div key={index} className="mb-4">
             <h3 className="font-medium">{exp.title}</h3>
             <p className="text-gray-600 text-sm">
-              {exp.company} •{" "}
-              {new Date(exp.startDate).getFullYear()} -{" "}
-              {exp.current
-                ? "Present"
-                : new Date(exp.endDate).getFullYear()}
+              {exp.company} 
             </p>
             <p className="text-gray-700 text-sm mt-1">
               {exp.description}
@@ -139,7 +135,7 @@ const UserProfile = () => {
             <div key={index} className="mb-4">
               <h3 className="font-medium">{edu.degree}</h3>
               <p className="text-gray-600 text-sm">
-                {edu.institution} • {edu.year}
+                {edu.institute} • {edu.year}
               </p>
             </div>
           ))

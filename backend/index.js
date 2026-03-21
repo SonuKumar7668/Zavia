@@ -19,6 +19,7 @@ const mentorRoutes = require("./routes/mentor.routes");
 const adminRoutes = require("./routes/admin.routes");
 const sessionRoutes = require("./routes/session.routes");
 const chatRoutes = require("./routes/chat.routes");
+const jobRoutes = require("./routes/job.routes");
 const verifyToken = require("./middlewares/verifyToken");
 
 app.use(morgan("dev"));
@@ -39,6 +40,7 @@ app.use("/admin",adminRoutes);
 app.use("/mentor",mentorRoutes);
 app.use("/session",sessionRoutes);
 app.use("/chat",chatRoutes);
+app.use("/jobs",jobRoutes);
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });
 });
