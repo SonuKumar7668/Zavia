@@ -3,8 +3,10 @@
 @import "slick-carousel/slick/slick-theme.css";
 
 @theme{
-    --color-secondary: #FFB100;
-    --color-primary: #da9800;
+    --color-secondary: #81C784;
+    --color-primary: #00695C;
+    --color-highlight: #FFD54F;
+    --color-background: #FAF9F6;
 }
 
 .input {

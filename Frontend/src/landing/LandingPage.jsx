@@ -1,5 +1,9 @@
 import React from 'react'
-import Hero from "../components/Hero";
+import Hero from "./Hero";
+import Features from './Features';
+import HowItWorks from './HowItWorks';
+import AiCTA from './AiCTA';
+import ExploreSection from './ExploreSection';  
 import WhyChooseUs from "../components/WhyChooseUs";
 import FeaturedMentors from "../components/FeaturesMentors";
 import SuccessStories from "../components/SuccessStories";
@@ -9,10 +13,14 @@ export default function LandingPage() {
   return (
     <div>
       <Hero />
-      <WhyChooseUs />
-      <FeaturedMentors />
-      <ChatBotLink/>
-      <SuccessStories />
+      <Features />
+      <HowItWorks/>
+      <AiCTA/>
+      <ExploreSection />
+      {/* <WhyChooseUs /> */}
+      {/* <FeaturedMentors /> */}
+      {/* <ChatBotLink/> */}
+      {/* <SuccessStories /> */}
     </div>
   )
 }

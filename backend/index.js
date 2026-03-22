@@ -22,13 +22,22 @@ const chatRoutes = require("./routes/chat.routes");
 const jobRoutes = require("./routes/job.routes");
 const verifyToken = require("./middlewares/verifyToken");
 
+const mentorModel = require("./models/mentorModel");
+const jobModel = require("./models/jobModel");
+
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(bodyParser.urlencoded());
 
 app.get("/",(req,res)=>{
-    res.send("Server started");
+    const threeMentors = mentorModel.find().select("name currentJob").limit(3);
+    const threeJobs = jobModel.find().select("title company location").limit(3);
+    Promise.all([threeMentors,threeJobs]).then(([mentors,jobs])=>{
+        return res.status(200).json({mentors,jobs});
+    }).catch((err)=>{
+        return res.status(500).json({message:"Error fetching data",error:err});
+    });
 })
 
 app.get("/verifyToken",verifyToken,(req,res)=>{

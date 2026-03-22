@@ -1,35 +1,41 @@
 import React from "react";
-import {Link} from "react-router";
+import { Link, useNavigate } from "react-router";
 import axios from "axios";
-import {useState,useEffect} from "react";
+import { useState, useEffect } from "react";
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
-  useEffect(()=>{
+  const navigate = useNavigate();
+
+  useEffect(() => {
     // Fetch user profile data from backend
     const fetchProfile = async () => {
       try {
         console.log("Fetching user profile...");
-        const token = localStorage.getItem("token");
+
         const backendUrl = import.meta.env.VITE_BACKEND_API;
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/login");
+        }
         const res = await axios.get(`${backendUrl}/user/profile`, {
           headers: { Authorization: token },
         });
         setUser(res.data.user);
-        
+
       } catch (err) {
         console.error("Error fetching profile:", err);
       }
     }
     fetchProfile();
-  },[]);
-  if(!user){
+  }, []);
+  if (!user) {
     return <div className="flex items-center justify-center h-screen">
       <p className="text-gray-500 text-lg">Loading profile...</p>
     </div>
   }
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+    <div className="max-w-6xl mx-auto p-6 bg-background min-h-screen">
 
       {/* HEADER */}
       <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row gap-6">
@@ -59,7 +65,7 @@ const UserProfile = () => {
           <div className="mt-4 flex gap-3">
             <a
               href={user.resume?.url}
-              className="bg-black text-white px-4 py-2 rounded-lg text-sm"
+              className="bg-primary text-white px-4 py-2 rounded-lg text-sm"
             >
               Download Resume
             </a>
@@ -83,7 +89,7 @@ const UserProfile = () => {
         <div className="bg-white rounded-2xl shadow p-6">
           <h2 className="font-semibold mb-2">Preferred Roles</h2>
           <p className="text-gray-700">
-            {user.jobPreferences.roles?.join(", ")} 
+            {user.jobPreferences.roles?.join(", ")}
           </p>
         </div>
 
@@ -117,7 +123,7 @@ const UserProfile = () => {
           <div key={index} className="mb-4">
             <h3 className="font-medium">{exp.title}</h3>
             <p className="text-gray-600 text-sm">
-              {exp.company} 
+              {exp.company}
             </p>
             <p className="text-gray-700 text-sm mt-1">
               {exp.description}

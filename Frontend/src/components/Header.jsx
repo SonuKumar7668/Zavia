@@ -97,7 +97,8 @@ function Header() {
           <Link to="/chat" className="hover:text-primary">Chat</Link>
           <Link to="/explore" className="hover:text-primary">Explore</Link>
           <Link to="/jobs" className="hover:text-primary">Jobs</Link>
-          <Link to="/admin" className="px-4 py-2 bg-primary text-white rounded-lg">Admin</Link>
+          {localStorage.getItem("role") === "admin" && <Link to="/admin" className="px-4 py-2 bg-primary text-white rounded-lg">Admin</Link>}
+          
 
           {/* CTA */}
           {isLoggedIn ? <Logout mentorId={mentorId} role={role} /> : <LoggedIn />}
