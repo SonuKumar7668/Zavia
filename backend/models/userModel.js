@@ -24,8 +24,11 @@ const educationSchema = new Schema({
 // Resume
 const resumeSchema = new Schema({
     url: String,              // S3 URL
-    extractedText: String,    // Parsed PDF text
-    uploadedAt: Date,
+    public_id:String,   // Cloudinary public ID
+    uploadedAt: {
+        type: Date,
+        default: Date.now
+    },
 }, { _id: false });
 
 // Project

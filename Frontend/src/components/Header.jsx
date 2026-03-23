@@ -246,7 +246,7 @@ const Logout = ({ mentorId,role }) => {
             <li>
               <button
                 onClick={logout}
-                className="w-full bg-amber-300 rounded-lg text-left px-4 py-2 transition"
+                className="cursor-pointer w-full bg-primary text-background rounded-lg text-left px-4 py-2 transition"
               >
                 Logout
               </button>

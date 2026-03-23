@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import ResumeUpload from "./ResumeUpload";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -165,6 +166,7 @@ const EditProfile = () => {
   }
   return (
     <div className="max-w-5xl mx-auto p-6">
+      <ResumeUpload/>
       <form onSubmit={handleSubmit} className="space-y-8">
 
         {/* BASIC INFO */}

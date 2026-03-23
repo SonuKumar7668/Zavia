@@ -37,7 +37,7 @@ const HowItWorks = () => {
             <div key={index} className="relative">
 
               {/* Step Number */}
-              <div className="w-14 h-14 mx-auto flex items-center justify-center rounded-full bg-primary text-white font-bold text-lg shadow-md">
+              <div className="w-14 h-14 z-20 mx-auto flex items-center justify-center rounded-full bg-primary text-white font-bold text-lg shadow-md">
                 {item.step}
               </div>
 
@@ -53,7 +53,7 @@ const HowItWorks = () => {
 
               {/* Connector Line (only for desktop) */}
               {index !== steps.length - 1 && (
-                <div className="hidden md:block absolute top-7 right-[-50%] w-full h-1 bg-secondary"></div>
+                <div className="hidden md:block absolute  top-7 right-[-50%] w-full h-1 bg-secondary"></div>
               )}
 
             </div>

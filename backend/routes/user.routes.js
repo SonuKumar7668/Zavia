@@ -10,10 +10,11 @@ const varifyToken = require("../middlewares/verifyToken");
 const asyncWrap = require("../middlewares/asyncWrap");
 const salt = 10;
 const multer = require("multer");
-const upload = multer();
+const upload = require("../middlewares/upload");
 const cloudinary = require("../config/cloudinary");
 const {pdfParse} = require("pdf-parse");
 const verifyToken = require("../middlewares/verifyToken");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 router.get("/profile",verifyToken,async (req,res)=>{
     let userId = req.user.id;
@@ -154,5 +155,41 @@ router.put("/forgotpassword",async (req,res)=>{
     await user.save();
     res.status(201).json({ message: "Password changed successfully" });
 })
+
+router.post(
+  "/resume/upload",
+  verifyToken,
+  upload.single("resume"),
+  async (req, res) => {
+    try {
+      const user = await userModel.findById(req.user.id);
+
+      // Upload to Cloudinary
+      const result = await uploadToCloudinary(req.file.buffer);
+      console.log("Cloudinary result:", result);
+      // Delete old resume if exists
+      if (user.resume?.public_id) {
+        await cloudinary.uploader.destroy(user.resume.public_id, {
+          resource_type: "raw",
+        });
+      }
+
+      user.resume = {
+        url: result.secure_url,
+        public_id: result.public_id,
+      };
+
+      await user.save();
+
+      res.json({
+        message: "Resume uploaded successfully",
+        resume: user.resume,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Upload failed", error: err.message });
+    }
+  }
+);
 
 module.exports = router;
