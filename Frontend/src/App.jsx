@@ -27,6 +27,7 @@ import CreateJob from "./admin/CreateJob";
 import EditJob from "./admin/EditJob";
 import JobsExplore from "./job/JobExplore";
 import JobDetails from "./job/JobDetails";
+import ApplicationsPage from "./job/Applications";
 
 function App() {
   const location = useLocation();
@@ -68,6 +69,7 @@ function App() {
           <Route path="jobs/create" element={<CreateJob />} />
           <Route path="jobs/edit/:id" element={<EditJob />} />
         </Route>
+        <Route path="/applications" element={<ApplicationsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       {!HideHeader && <Footer />}

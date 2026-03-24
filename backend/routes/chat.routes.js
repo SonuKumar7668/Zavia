@@ -21,10 +21,15 @@ router.post("/", async (req, res) => {
     const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = ai.getGenerativeModel({ model: "models/gemini-2.5-flash-lite" });
 
-    const prompt = `
-    You are a professional mentor AI assistant for carrer guidence. 
-    Respond accordingly to the user's message, maintaining context and clarity , also suggest 2 to 3 careers about what user is asking do not answer any inappropriate questions.    
-      User:${message}
+    // const prompt = `
+    // You are a professional mentor AI assistant for carrer guidence. 
+    // Respond accordingly to the user's message, maintaining context and clarity , also suggest 2 to 3 careers about what user is asking do not answer any inappropriate questions.    
+    //   User:${message}
+    // `;
+
+      const prompt = `You are a professional AI assistant for carrier guidence and any job related queries. 
+    Respond accordingly to the user's message, maintaining context and clarity , also suggest 2 to 3 careers or job titles about what user is asking do not answer any inappropriate questions.
+    User:${message}
     `;
 
     // const prompt = `

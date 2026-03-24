@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams,Link } from "react-router";
 import axios from "axios";
+// import { set } from "mongoose";
+// import User from "../../../backend/models/userModel";
 
 const JobDetails = () => {
   const { id } = useParams();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [applied, setApplied] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const User = localStorage.getItem("userId");
   const fetchJob = async () => {
     try {
       setLoading(true);
@@ -17,6 +21,52 @@ const JobDetails = () => {
     }
     setLoading(false);
   };
+
+  const handleApply = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_BACKEND_API}/jobs/apply`, { jobId: id }, {
+        headers: { Authorization: localStorage.getItem("token") },
+      });
+      alert("Application submitted!");
+      fetchJob(); // Refresh job details to update application status
+    } catch (err) {
+      console.error("Error applying for job:", err);
+      alert("Failed to apply. Please try again.");
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_BACKEND_API}/jobs/save`, { jobId: id }, {
+        headers: { Authorization: localStorage.getItem("token") },
+      });
+      alert(saved ? "Job removed from saved list" : "Job saved!");
+      setSaved(!saved);
+    } catch (err) {
+      console.error("Error saving job:", err);
+      alert("Failed to save job. Please try again.");
+    }
+  };
+
+  const checkIfApplied = () => {
+    if (job && job.applicants) {
+      return job.applicants.some(applicant => applicant.user === User);
+    }
+    return false;
+  };
+
+  const checkIfSaved = () => {
+    if (job && job.savedBy) {
+      setSaved(job.savedBy.some(userId => userId === User));
+    }
+  }
+
+  useEffect(() => {
+    if (job) {
+      setApplied(checkIfApplied());
+      checkIfSaved();
+    }
+  }, [job]);
 
   useEffect(() => {
     fetchJob();
@@ -54,12 +104,12 @@ const JobDetails = () => {
 
           {/* Actions */}
           <div className="mt-5 flex gap-3">
-            <button className="bg-primary text-white px-5 py-2 rounded-lg">
-              Apply Now
+            <button disabled={applied} onClick={handleApply} className="cursor-pointer bg-primary text-white px-5 py-2 rounded-lg">
+              {applied ? "Applied" : "Apply Now"}
             </button>
 
-            <button className="border px-5 py-2 rounded-lg">
-              Save Job
+            <button onClick={handleSave} disabled={saved} className="cursor-pointer border px-5 py-2 rounded-lg">
+              {saved ? "Saved" : "Save Job"}
             </button>
           </div>
         </div>
@@ -114,7 +164,7 @@ const JobDetails = () => {
                 <p><strong>Work Mode:</strong> {job.workMode}</p>
                 <p><strong>Experience:</strong> {job.experienceRequired}</p>
                 <p><strong>Education:</strong> {job.educationRequired}</p>
-                <p><strong>Deadline:</strong> {job.applicationDeadline?.slice(0,10)}</p>
+                <p><strong>Deadline:</strong> {job.applicationDeadline?.slice(0, 10)}</p>
               </div>
             </div>
 
@@ -128,7 +178,9 @@ const JobDetails = () => {
               </p>
 
               <button className="bg-primary text-white px-4 py-2 rounded-lg w-full">
+                <Link to="/explore" className="w-full h-full block">
                 Talk to Mentor
+                </Link>
               </button>
             </div>
 

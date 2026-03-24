@@ -6,12 +6,37 @@ import { useState, useEffect } from "react";
 const UserProfile = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [applicationStats, setApplicationStats] = useState({
+    applied: 0,
+    shortlisted: 0,
+    rejected: 0,
+    hired: 0,
+  });
+
+  function getApplicationStats(applications = []) {
+  const stats = {
+    applied: 0,
+    shortlisted: 0,
+    rejected: 0,
+    hired: 0,
+  };
+
+  applications.forEach((app) => {
+    const status = app.status?.toLowerCase();
+
+    if (stats.hasOwnProperty(status)) {
+      stats[status]++;
+    }
+  });
+
+  return stats;
+}
 
   useEffect(() => {
     // Fetch user profile data from backend
     const fetchProfile = async () => {
       try {
-        console.log("Fetching user profile...");
+        
 
         const backendUrl = import.meta.env.VITE_BACKEND_API;
         const token = localStorage.getItem("token");
@@ -22,6 +47,7 @@ const UserProfile = () => {
           headers: { Authorization: token },
         });
         setUser(res.data.user);
+        setApplicationStats(getApplicationStats(res.data.user.applications));
 
       } catch (err) {
         console.error("Error fetching profile:", err);
@@ -70,7 +96,7 @@ const UserProfile = () => {
               download={`Resume_${user.name}.pdf`}
               className="bg-primary text-white px-4 py-2 rounded-lg text-sm"
             >
-              Download Resume
+              Resume
             </a>
             <Link to="/user/profile/edit">
               <button className="border px-4 py-2 rounded-lg text-sm">
@@ -218,13 +244,13 @@ const UserProfile = () => {
           <h2 className="font-semibold mb-4">Mentorship Activity</h2>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <p className="text-xl font-bold">
+              <p className="text-xl font-bold">0
                 {user.mentorshipStats?.sessionsCompleted}
               </p>
               <p className="text-sm text-gray-500">Sessions</p>
             </div>
             <div>
-              <p className="text-xl font-bold">
+              <p className="text-xl font-bold">0
                 {user.mentorshipStats?.mentorsConnected}
               </p>
               <p className="text-sm text-gray-500">Mentors</p>
@@ -241,25 +267,25 @@ const UserProfile = () => {
           <div className="grid grid-cols-4 text-center text-sm">
             <div>
               <p className="font-bold">
-                {user.jobStats?.applied}
+                {user.applications?.length || 0}
               </p>
               <p className="text-gray-500">Applied</p>
             </div>
             <div>
-              <p className="font-bold">
-                {user.jobStats?.shortlisted}
+              <p className="font-bold"> 
+                {applicationStats.shortlisted}
               </p>
               <p className="text-gray-500">Shortlisted</p>
             </div>
             <div>
               <p className="font-bold">
-                {user.jobStats?.interviews}
+                {applicationStats.rejected}
               </p>
-              <p className="text-gray-500">Interview</p>
+              <p className="text-gray-500">Rejected</p>
             </div>
             <div>
               <p className="font-bold">
-                {user.jobStats?.offers}
+                {applicationStats.hired}
               </p>
               <p className="text-gray-500">Offers</p>
             </div>

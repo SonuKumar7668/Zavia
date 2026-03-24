@@ -24,7 +24,7 @@ const educationSchema = new Schema({
 // Resume
 const resumeSchema = new Schema({
     url: String,              // S3 URL
-    public_id:String,   // Cloudinary public ID
+    public_id: String,   // Cloudinary public ID
     uploadedAt: {
         type: Date,
         default: Date.now
@@ -114,7 +114,10 @@ const userSchema = new Schema({
     },
 
     /* ---------- Applications ---------- */
-    applications: [applicationSchema],
+    applications: [{
+        type: Schema.Types.ObjectId,
+        ref: "Job"
+    }],
 
     /* ---------- Platform Stats ---------- */
     profileCompletion: {

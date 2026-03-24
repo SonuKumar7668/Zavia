@@ -244,6 +244,14 @@ const Logout = ({ mentorId,role }) => {
             </li>
             )}
             <li>
+              <Link
+                to="/applications"
+                className="block px-4 py-2 hover:bg-gray-50 transition" 
+              >
+                Applications
+              </Link>
+            </li>
+            <li>
               <button
                 onClick={logout}
                 className="cursor-pointer w-full bg-primary text-background rounded-lg text-left px-4 py-2 transition"

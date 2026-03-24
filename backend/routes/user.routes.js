@@ -166,7 +166,6 @@ router.post(
 
       // Upload to Cloudinary
       const result = await uploadToCloudinary(req.file.buffer);
-      console.log("Cloudinary result:", result);
       // Delete old resume if exists
       if (user.resume?.public_id) {
         await cloudinary.uploader.destroy(user.resume.public_id, {
@@ -186,7 +185,6 @@ router.post(
         resume: user.resume,
       });
     } catch (err) {
-      console.log(err);
       res.status(500).json({ message: "Upload failed", error: err.message });
     }
   }

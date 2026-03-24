@@ -73,6 +73,13 @@ const jobSchema = new mongoose.Schema(
       },
     ],
 
+    savedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     // Posted By (Admin / Employer)
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,

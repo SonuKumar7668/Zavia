@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Job = require("../models/jobModel");
+const User = require("../models/userModel");
 const verifyToken = require("../middlewares/verifyToken");
 const verifyAdmin = require("../middlewares/verifyAdmin");
 
@@ -88,5 +89,75 @@ router.delete("/:id",verifyToken,verifyAdmin, async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 })
+
+router.get("/user/apply", verifyToken, async(req, res) => {
+    try {
+        const userId = req.user.id;
+        const appliedJobs = await User.findById(userId).populate("applications");
+        const jobs = appliedJobs.applications || [];
+        console.log("Applied Jobs:", jobs);
+        res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+})
+
+router.get("/user/save", verifyToken, async (req, res) => {
+    try {
+        console.log("Fetching saved jobs for user ID:", req.user.id);
+        const userId = req.user.id;
+        console.log("User ID for saved jobs:", userId);
+        const savedJobs = await User.findById(userId).populate("savedJobs");
+        const jobs = savedJobs.savedJobs || [];
+        console.log("Saved Jobs:", jobs);
+        res.json(jobs);
+    } catch (error) {
+        console.error("Error fetching saved jobs:", error);
+        res.status(500).json({ message: error.message });
+    }
+})
+
+router.post("/apply", verifyToken, async (req, res) => {
+    try {
+        const job = await Job.findById(req.body.jobId);
+        if (!job) return res.status(404).json({ message: "Job not found" });
+        const userId = req.user.id;
+        if (job.applicants.some(applicant => applicant.user.toString() === userId)) {
+            return res.status(400).json({ message: "Already applied to this job" });
+        }
+        job.applicants.push({ user: userId, status: "applied" });
+        await job.save();
+        const user = await User.findById(userId);
+        user.applications.push(job._id);
+        await user.save();
+        res.json({ message: "Applied successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.post("/save", verifyToken, async (req, res) => {
+    try {
+        const job = await Job.findById(req.body.jobId);
+        if (!job) return res.status(404).json({ message: "Job not found" });
+        const userId = req.user.id;
+        if (job.savedBy.includes(userId)) {
+            job.savedBy = job.savedBy.filter(id => id.toString() !== userId);
+        } else {
+            job.savedBy.push(userId);
+        }
+        await job.save();
+        const user = await User.findById(userId);
+        if (user.savedJobs.includes(job._id)) {
+            user.savedJobs = user.savedJobs.filter(id => id.toString() !== job._id.toString());
+        } else {
+            user.savedJobs.push(job._id);
+        }
+        await user.save();
+        res.json({ message: "Job saved/unsaved successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 module.exports = router;
