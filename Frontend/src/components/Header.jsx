@@ -223,8 +223,8 @@ const Logout = ({ mentorId,role }) => {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-sm">
-          <ul className="py-2 text-sm text-gray-600">
+        <div className="absolute right-0 mt-2 w-44 z-20 bg-white border border-gray-200 rounded-lg shadow-sm">
+          <ul className="py-2 text-sm z-20 text-gray-600">
             <li>
               <Link
                 to="/user/profile"
