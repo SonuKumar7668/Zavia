@@ -9,7 +9,7 @@ const ExploreSection = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const backendUrl = process.env.VITE_BACKEND_API;
+        const backendUrl = import.meta.env.VITE_BACKEND_API;
         const response = await axios.get(`${backendUrl}/`);
         setMentors(response.data.mentors);
         setJobs(response.data.jobs);
