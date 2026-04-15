@@ -12,28 +12,29 @@ const salt = 10;
 const multer = require("multer");
 const upload = require("../middlewares/upload");
 const cloudinary = require("../config/cloudinary");
-const {pdfParse} = require("pdf-parse");
+const { pdfParse } = require("pdf-parse");
 const verifyToken = require("../middlewares/verifyToken");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
+const { extractTextFromPDF, parseResumeWithGemini, mapToUserSchema } = require("../utils/resumeParser");
 
-router.get("/profile",verifyToken,async (req,res)=>{
-    let userId = req.user.id;
-    let user = await userModel.findById(userId).select("-password");
-    if(!user){
-        return res.status(404).json({msg:"User not found"});
-    }
-    res.status(200).json({user});
+router.get("/profile", verifyToken, async (req, res) => {
+  let userId = req.user.id;
+  let user = await userModel.findById(userId).select("-password");
+  if (!user) {
+    return res.status(404).json({ msg: "User not found" });
+  }
+  res.status(200).json({ user });
 });
 
-router.put("/profile",verifyToken,async (req,res)=>{
-try {
+router.put("/profile", verifyToken, async (req, res) => {
+  try {
     const userId = req.user.id; // from JWT middleware
-    console.log("user data",req.body);
+    console.log("user data", req.body);
     // Extract only allowed fields
     const allowedUpdates = {
       name: req.body.name,
       location: req.body.location,
-      careerSummary: req.body.careerSummary,
+      bio: req.body.bio,
       jobPreferences: req.body.jobPreferences,
       skills: req.body.skills,
       experience: req.body.experience,
@@ -96,64 +97,64 @@ try {
 
 // Register User
 router.post("/register", async (req, res) => {
-    let { name, email, password } = req.body;
-    if(!name || !email || !password){
-        return res.status(400).json({msg:"Please enter all fields"});
-    }
-    let user = await userModel.findOne({email});
-    if(user){
-        return res.status(400).json({msg:"User already exists"});
-    }
-    const hashedPassword = await bcrypt.hash(password, salt);
-    user = new userModel({name, email, password:hashedPassword});
-    await user.save();
-    res.status(201).json({msg:"User registered successfully"});
-    // res.redirect('/login');
+  let { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({ msg: "Please enter all fields" });
+  }
+  let user = await userModel.findOne({ email });
+  if (user) {
+    return res.status(400).json({ msg: "User already exists" });
+  }
+  const hashedPassword = await bcrypt.hash(password, salt);
+  user = new userModel({ name, email, password: hashedPassword });
+  await user.save();
+  res.status(201).json({ msg: "User registered successfully" });
+  // res.redirect('/login');
 })
 
 // Login User
-router.post("/login",async (req,res)=>{
-    let {email,password} = req.body;
-    if(!email || !password){
-        return res.status(400).json({msg:"Please enter all fields"});
-    }
-    let user =await userModel.findOne({email});
-    if(!user){
-        return res.status(400).json({msg:"User does not exist"});
-    }
-    const isMatch = await bcrypt.compare(password,user.password);
-    if(!isMatch){
-        return res.status(400).json({msg:"Invalid credentials"});
-    }
-    const token = jwt.sign({id:user._id,role:user.role,name:user.name},JWT_SECRET,{expiresIn:"7d"});
-    res.status(200).json({success:"true",token});
+router.post("/login", async (req, res) => {
+  let { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ msg: "Please enter all fields" });
+  }
+  let user = await userModel.findOne({ email });
+  if (!user) {
+    return res.status(400).json({ msg: "User does not exist" });
+  }
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ msg: "Invalid credentials" });
+  }
+  const token = jwt.sign({ id: user._id, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: "7d" });
+  res.status(200).json({ success: "true", token });
 })
 
 // Mentor Request
-router.post("/mentor/create",varifyToken,async (req,res)=>{
-    let data = req.body;
-    let newMentor = new mentorModel(data);
-    let userId = req.user.id;
-    newMentor.userId = userId;
-    newMentor.status = "pending";
-    let user = await userModel.findById(userId);
-    user.role = "mentor";
-    await user.save();
-    await newMentor.save();
-    return res.status(200).json({msg:"Mentor request received"});
+router.post("/mentor/create", varifyToken, async (req, res) => {
+  let data = req.body;
+  let newMentor = new mentorModel(data);
+  let userId = req.user.id;
+  newMentor.userId = userId;
+  newMentor.status = "pending";
+  let user = await userModel.findById(userId);
+  user.role = "mentor";
+  await user.save();
+  await newMentor.save();
+  return res.status(200).json({ msg: "Mentor request received" });
 })
 
-router.put("/forgotpassword",async (req,res)=>{
-    let {email,password} = req.body;
-    let user =await userModel.findOne({email});
-    if(!user){
-        console.log("not exist");
-        return res.status(404).json({message:"Email does not exist"});
-    }
-    const hashedPassword = await bcrypt.hash(password,salt);
-    user.password = hashedPassword;
-    await user.save();
-    res.status(201).json({ message: "Password changed successfully" });
+router.put("/forgotpassword", async (req, res) => {
+  let { email, password } = req.body;
+  let user = await userModel.findOne({ email });
+  if (!user) {
+    console.log("not exist");
+    return res.status(404).json({ message: "Email does not exist" });
+  }
+  const hashedPassword = await bcrypt.hash(password, salt);
+  user.password = hashedPassword;
+  await user.save();
+  res.status(201).json({ message: "Password changed successfully" });
 })
 
 router.post(
@@ -162,6 +163,10 @@ router.post(
   upload.single("resume"),
   async (req, res) => {
     try {
+      const text = await extractTextFromPDF(req.file.buffer);
+      const rawData = await parseResumeWithGemini(text);
+      const userData = mapToUserSchema(rawData);
+
       const user = await userModel.findById(req.user.id);
 
       // Upload to Cloudinary
@@ -177,14 +182,16 @@ router.post(
         url: result.secure_url,
         public_id: result.public_id,
       };
-
+      
       await user.save();
+      await userModel.findByIdAndUpdate(user._id, userData, { new: true });
 
       res.json({
         message: "Resume uploaded successfully",
         resume: user.resume,
       });
     } catch (err) {
+      console.error("Resume upload error:", err);
       res.status(500).json({ message: "Upload failed", error: err.message });
     }
   }

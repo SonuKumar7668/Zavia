@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-const ResumeUpload = () => {
+const ResumeUpload = ({ fetchProfile }) => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -31,14 +31,16 @@ const ResumeUpload = () => {
       console.log(res.data);
         setSuccess("Resume uploaded successfully");
         setLoading(false);
+        fetchProfile();
     } catch (err) {
         setError(err.response?.data?.message || "Upload failed");
+        setLoading(false);
       console.error(err);
     }
   };
 
   return (
-    <div className="p-4 border rounded-lg">
+    <div className="p-4  rounded-lg">
       <h2 className="text-lg font-semibold">Upload Resume</h2>
 
       <input

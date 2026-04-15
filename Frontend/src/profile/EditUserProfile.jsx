@@ -8,7 +8,10 @@ const EditProfile = () => {
   const [formData, setFormData] = useState(null);
   useEffect(() => {
     // Fetch user profile data from backend
-    const fetchProfile = async () => {
+    fetchProfile();
+  }, []);
+
+      const fetchProfile = async () => {
       try {
         console.log("Fetching profile...");
         const token = localStorage.getItem("token");
@@ -22,8 +25,6 @@ const EditProfile = () => {
         console.error("Error fetching profile:", err);
       }
     }
-    fetchProfile();
-  }, []);
 
   console.log("formData", formData);
 
@@ -144,7 +145,6 @@ const EditProfile = () => {
         }
       );
       if (res.data.success) {
-        alert("Profile updated successfully!");
         navigate("/user/profile");
       }
     } catch (error) {
@@ -166,7 +166,7 @@ const EditProfile = () => {
   }
   return (
     <div className="max-w-5xl mx-auto p-6">
-      <ResumeUpload/>
+      <ResumeUpload fetchProfile={fetchProfile}/>
       <form onSubmit={handleSubmit} className="space-y-8">
 
         {/* BASIC INFO */}
@@ -197,7 +197,7 @@ const EditProfile = () => {
           <h2 className="font-semibold mb-4">Career Summary</h2>
 
           <textarea
-            name="careerSummary"
+            name="bio"
             value={formData.bio}
             onChange={handleChange}
             className="input h-24"
