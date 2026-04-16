@@ -1,5 +1,13 @@
+
 import { Link } from "react-router";
+import { useState, useEffect } from "react";
 const Hero = () => {
+  const [userId, setUserId] = useState(null);
+  useEffect(() => {
+    const id = localStorage.getItem("userid");
+    setUserId(id);
+  }, []);
+
   return (
     <section className="bg-background">
       <div className="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
@@ -19,7 +27,7 @@ const Hero = () => {
           <div className="mt-6 flex flex-wrap gap-4">
 
             {/* Primary CTA */}
-            <Link to="/user/profile" className="bg-primary text-white px-6 py-3 rounded-xl font-medium shadow-md hover:opacity-90 transition">
+            <Link to={`/user/profile/${userId}`} className="bg-primary text-white px-6 py-3 rounded-xl font-medium shadow-md hover:opacity-90 transition">
               Get Started
             </Link>
 

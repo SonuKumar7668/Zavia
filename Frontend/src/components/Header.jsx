@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Search, Menu, X, ChevronDown,ChevronUp } from "lucide-react";
+import { Search, Menu, X, ChevronDown, ChevronUp } from "lucide-react";
 
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -97,8 +97,10 @@ function Header() {
           <Link to="/chat" className="hover:text-primary">Chat</Link>
           <Link to="/explore" className="hover:text-primary">Explore</Link>
           <Link to="/jobs" className="hover:text-primary">Jobs</Link>
-          {localStorage.getItem("role") === "admin" && <Link to="/admin" className="px-4 py-2 bg-primary text-white rounded-lg">Admin</Link>}
-          
+          {localStorage.getItem("role") === "admin" ?
+            <Link to="/admin" className="px-4 py-2 bg-primary text-white rounded-lg">Recruiter</Link> :
+            <Link to="/become-recruiter" className="px-4 py-2 bg-primary text-white rounded-lg">Become Recruiter</Link>}
+
 
           {/* CTA */}
           {isLoggedIn ? <Logout mentorId={mentorId} role={role} /> : <LoggedIn />}
@@ -189,7 +191,7 @@ const LoggedIn = () => {
   )
 }
 
-const Logout = ({ mentorId,role }) => {
+const Logout = ({ mentorId, role }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("name");
@@ -197,6 +199,8 @@ const Logout = ({ mentorId,role }) => {
     window.location.reload();
   }
   const [isOpen, setIsOpen] = useState(false);
+  const [userId, setUserId] = useState(localStorage.getItem("userId") || null);
+  // setUserId(localStorage.getItem("userId") || null);
   const dropdownRef = useRef(null);
 
   // Close dropdown on outside click
@@ -227,26 +231,26 @@ const Logout = ({ mentorId,role }) => {
           <ul className="py-2 text-sm z-20 text-gray-600">
             <li>
               <Link
-                to="/user/profile"
+                to={`/user/profile/${userId}`}
                 className="block px-4 py-2 hover:bg-gray-50 transition"
               >
                 Profile
               </Link>
             </li>
             {role === "mentor" && (
-            <li>
-              <Link
-                to={`/dashboard/${mentorId}`}
-                className="block px-4 py-2 hover:bg-gray-50 transition"
-              >
-                Dashboard
-              </Link>
-            </li>
+              <li>
+                <Link
+                  to={`/dashboard/${mentorId}`}
+                  className="block px-4 py-2 hover:bg-gray-50 transition"
+                >
+                  Dashboard
+                </Link>
+              </li>
             )}
             <li>
               <Link
                 to="/applications"
-                className="block px-4 py-2 hover:bg-gray-50 transition" 
+                className="block px-4 py-2 hover:bg-gray-50 transition"
               >
                 Applications
               </Link>

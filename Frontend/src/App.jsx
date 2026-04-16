@@ -28,6 +28,8 @@ import EditJob from "./admin/EditJob";
 import JobsExplore from "./job/JobExplore";
 import JobDetails from "./job/JobDetails";
 import ApplicationsPage from "./job/Applications";
+import BecomeRecruiter from "./components/BecomeRecruiter";
+import Applications from "./admin/Applications";
 
 function App() {
   const location = useLocation();
@@ -47,7 +49,7 @@ function App() {
         <Route path="/mentor/profile/edit/:id" element={<EditDashboard />} />
         <Route path="/form" element={<MentorForm />} />
         <Route path="/dashboard/:id" element={<Dashboard />} />
-        <Route path="/user/profile" element={<UserProfile />} />
+        <Route path="/user/profile/:id" element={<UserProfile />} />
         <Route path="/user/profile/edit" element={<EditUserProfile />} />
         <Route path="/videocall/:id" element={
           <SocketProvider>
@@ -58,6 +60,7 @@ function App() {
         <Route path="/chat" element={<Chatbot />} />
         <Route path="/jobs" element={<JobsExplore />} />
         <Route path="/jobs/:id" element={<JobDetails />} />
+        <Route path="/become-recruiter" element={<BecomeRecruiter />} />
         <Route path="/admin" element={
           <AdminRoute>
             <AdminLayout />
@@ -68,6 +71,7 @@ function App() {
           <Route path="users" element={<ManageUsers />} />
           <Route path="jobs/create" element={<CreateJob />} />
           <Route path="jobs/edit/:id" element={<EditJob />} />
+          <Route path="jobs/:id/applications" element={<Applications />} />
         </Route>
         <Route path="/applications" element={<ApplicationsPage />} />
         <Route path="*" element={<NotFoundPage />} />

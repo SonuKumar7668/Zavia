@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 // import API from "../api/jobApi";
 import axios from "axios";
 import Header from "../components/Header";
@@ -13,7 +13,11 @@ const ManageJobs = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_API}/jobs`);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_API}/admin/jobs`, {
+        headers: {
+          Authorization: `${localStorage.getItem("token")}`,
+        },
+      });
       setJobs(data.jobs);
     } catch (err) {
       console.error(err);
@@ -110,6 +114,16 @@ const ManageJobs = () => {
 
               {/* Right: Actions */}
               <div className="flex items-center gap-2 shrink-0">
+
+                <Link
+                  to={`/admin/jobs/${job._id}/applications`}
+                  className="cursor-pointer flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-gray-600 bg-gray-50 border border-gray-200 rounded-xl hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-all duration-150"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                  Applications
+                </Link>
 
                 {/* Edit */}
                 <button

@@ -2,8 +2,11 @@ import React from "react";
 import { Link, useNavigate } from "react-router";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 
 const UserProfile = () => {
+  const [viewMode, setViewMode] = useState('private'); // overview, applications, mentorship
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [applicationStats, setApplicationStats] = useState({
@@ -14,29 +17,29 @@ const UserProfile = () => {
   });
 
   function getApplicationStats(applications = []) {
-  const stats = {
-    applied: 0,
-    shortlisted: 0,
-    rejected: 0,
-    hired: 0,
-  };
+    const stats = {
+      applied: 0,
+      shortlisted: 0,
+      rejected: 0,
+      hired: 0,
+    };
 
-  applications.forEach((app) => {
-    const status = app.status?.toLowerCase();
+    applications.forEach((app) => {
+      const status = app.status?.toLowerCase();
 
-    if (stats.hasOwnProperty(status)) {
-      stats[status]++;
-    }
-  });
+      if (stats.hasOwnProperty(status)) {
+        stats[status]++;
+      }
+    });
 
-  return stats;
-}
+    return stats;
+  }
 
   useEffect(() => {
     // Fetch user profile data from backend
     const fetchProfile = async () => {
       try {
-        
+
 
         const backendUrl = import.meta.env.VITE_BACKEND_API;
         const token = localStorage.getItem("token");
@@ -48,7 +51,7 @@ const UserProfile = () => {
         });
         setUser(res.data.user);
         setApplicationStats(getApplicationStats(res.data.user.applications));
-
+        setViewMode(searchParams.get("view") || "private");
       } catch (err) {
         console.error("Error fetching profile:", err);
       }
@@ -98,11 +101,13 @@ const UserProfile = () => {
             >
               Resume
             </a>
-            <Link to="/user/profile/edit">
-              <button className="border px-4 py-2 rounded-lg text-sm">
-                Edit Profile
-              </button>
-            </Link>
+            {viewMode !== "public" && (
+              <Link to="/user/profile/edit">
+                <button className="border px-4 py-2 rounded-lg text-sm">
+                  Edit Profile
+                </button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -272,7 +277,7 @@ const UserProfile = () => {
               <p className="text-gray-500">Applied</p>
             </div>
             <div>
-              <p className="font-bold"> 
+              <p className="font-bold">
                 {applicationStats.shortlisted}
               </p>
               <p className="text-gray-500">Shortlisted</p>

@@ -25,6 +25,8 @@ router.get("/:id", async (req,res)=>{
     try{
         const job = await Job.findById(req.params.id);
         if(!job) return res.status(404).json({message: "Job not found"});
+        job.views = job.views + 1;
+        await job.save();
         res.json({ job });
     }catch(error){
         res.status(500).json({message: error.message})
