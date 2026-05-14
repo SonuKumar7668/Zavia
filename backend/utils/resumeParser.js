@@ -26,7 +26,7 @@ const mapToUserSchema = (data) => {
 
   // Basic fields
   if (data.name?.trim()) result.name = data.name;
-  if (data.email?.trim()) result.email = data.email;
+  // if (data.email?.trim()) result.email = data.email;
   if (data.location?.trim()) result.location = data.location;
   if (data.headline?.trim()) result.headline = data.headline;
   if (data.bio?.trim()) result.bio = data.bio;
